@@ -9,6 +9,7 @@ def init_job(website, topic):
 def finish_job(WEBSITE, CATEGORY, start_dt):
     end_dt = datetime.now()
     duration = (end_dt - start_dt).total_seconds()
+    return duration
 
 # Logging wrapper to add time data
 def logging(message, **kwargs):
