@@ -2,6 +2,7 @@ from datetime import datetime
 import dateparser
 import json
 
+##### Logging Utils #####
 class Logger:
     def __init__(self, website, category, **params):
         self.website = website
@@ -36,9 +37,19 @@ class Logger:
     def log_finish(self):
         """Logging job finish"""
         self.end_time = datetime.now()
-        self.duration = (self.end_time - self.start_time).total_seconds()
+        self.duration = int((self.end_time - self.start_time).total_seconds())
+        minutes = self.duration // 60
+        seconds = self.duration % 60
         dt_now, dt_nspc = self.get_datetime_namespace()
-        print(f"{dt_nspc} Finishing web-scraping process for `{self.website}` - `{self.category}`. Total execution time: {self.duration} second(s). Total extracted info: {self.cnt}")
+        print(f"{dt_nspc} Finishing web-scraping process for `{self.website}` - `{self.category}`. Total execution time: {minutes} minute(s), {seconds} second(s). Total extracted info: {self.cnt}")
+
+##### Datetime / Time Utils #####
+def split_date(dt):
+    """Split date (str format) to 3 parts: year, month (ID), day"""
+
+    dt_parts = dt.split("-")
+    [year, month, day] = [part.zfill(2) for part in dt_parts]
+    return year, month, day
 
 def reformat_dt(dt, from_fmt, to_fmt):
     """Change datetime format to other format"""

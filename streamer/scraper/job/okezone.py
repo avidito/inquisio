@@ -2,20 +2,20 @@ import requests
 import time
 from bs4 import BeautifulSoup
 
-from . import Logger, reformat_dt, cvt_ts, export_news
+from . import Logger, reformat_dt, cvt_ts, split_date, export_news
 
 ###### Navigation ######
-def navigate_page(url, delay, log, query=None, path=None):
+def navigate_page(url, delay, log, query=None, path=None, data=None):
     """Navigate to new page"""
 
     # Inject path to url
     url_fin = url
-    if (path):
-        path["date"] = reformat_dt(path["date"], from_fmt="%Y-%m-%d", to_fmt="%Y/%m/%d")
-        url_fin = requests.compat.urljoin(url_fin, path["date"])
+    if (data):
+        [year, month, day] = split_date(data["date"])
+        data = {"thn": year, "bln": month, "tgl": day}
 
     # Get page html
-    req = requests.get(url_fin)
+    req = requests.post(url_fin, data=data, allow_redirects=True) if (data) else requests.get(url_fin)
     log.log_navigation(req.url, req.status_code, delay)
     time.sleep(delay)
     return req.url, BeautifulSoup(req.content, "lxml")
@@ -81,10 +81,12 @@ def get_next_index_page_url(page):
 def get_next_news_page_url(page):
     """Get next page url from next button"""
 
+    next_url = None
     next_button = page.find("div", attrs={"class": "next"})
     if (next_button):
         next_button = next_button.find("span", text="Selanjutnya")
-    next_url = next_button.parent["href"] if (next_button) else None
+        next_url = next_button.parent["href"] if (next_button) else None
+        next_url = next_url if (next_url != "#") else None
     return next_url
 
 ##### Format Element #####

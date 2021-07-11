@@ -2,7 +2,8 @@
 DELAY = 10
 SCRAPER_META = {
     "okezone": [
-        ("bola", "https://bola.okezone.com/indeks/")
+        ("bola", "https://bola.okezone.com/indeks/"),
+        # ("travel", "https://travel.okezone.com/indeks")
     ]
 }
 
