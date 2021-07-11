@@ -24,19 +24,21 @@ class Logger:
         """Logging job start"""
 
         dt_now, dt_nspc = self.get_datetime_namespace()
-        print(f"{dt_nspc} Starting scraper for {self.website} - {self.category}. Using parameters: {self.params}")
+        print(f"{dt_nspc} Starting scraper for `{self.website}` - `{self.category}`. Using parameters: {self.params}")
         self.start_time = dt_now
 
     def log_navigation(self, url, status_code, delay):
         """Logging page navigation"""
 
         dt_now, dt_nspc = self.get_datetime_namespace()
-        print(f"{dt_nspc} Navigate to page {url}. Status code: {status_code}. Sleep for {delay} second(s)")
+        print(f"{dt_nspc} Navigate to page `{url}`. Status code: {status_code}. Sleep for {delay} second(s)")
 
     def log_finish(self):
+        """Logging job finish"""
         self.end_time = datetime.now()
         self.duration = (self.end_time - self.start_time).total_seconds()
-        print(f"Finishing web-scraping process for {self.website} - {self.category}. Total execution time: {self.duration} second(s). Total extracted info: {self.cnt}")
+        dt_now, dt_nspc = self.get_datetime_namespace()
+        print(f"{dt_nspc} Finishing web-scraping process for `{self.website}` - `{self.category}`. Total execution time: {self.duration} second(s). Total extracted info: {self.cnt}")
 
 def reformat_dt(dt, from_fmt, to_fmt):
     """Change datetime format to other format"""

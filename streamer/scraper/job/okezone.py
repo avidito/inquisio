@@ -50,17 +50,54 @@ def extract_news_content(url, delay, log):
     [current_url, news_html] = navigate_page(url, delay, log)
     author = news_html.find("div", attrs={"class": "namerep"}).find(text=True)
     tags = [tag.text for tag in news_html.find("div", attrs={"class": "newtag"}).find_all("li")]
-    content = None
+    content = extract_paginate_content(news_html, delay, log)
 
-    return {"author": author, "tags": tags, "content": content}
+    return {"author": author, "tags": tags, "content": fmt_content(content)}
+
+def extract_paginate_content(page, delay, log):
+    """Extracting news content from all pagination in the article"""
+    content = []
+    current_page = page
+    while(1):
+        current_page_content = current_page.find("div", attrs={"id": "contentx"}).find_all("p")
+        content.extend(current_page_content)
+
+        next_url = get_next_news_page_url(current_page)
+        if (next_url):
+            [current_url, current_page] = navigate_page(next_url, delay, log)
+        else:
+            break
+
+    return content
 
 ###### Get Element ######
-def get_next_page_url(page):
-    """ Get next page url from next button """
+def get_next_index_page_url(page):
+    """Get next page url from next button"""
 
     next_button = page.find("a", attrs={"rel": "next"})
     next_url = next_button["href"] if (next_button) else None
     return next_url
+
+def get_next_news_page_url(page):
+    """Get next page url from next button"""
+
+    next_button = page.find("div", attrs={"class": "next"})
+    if (next_button):
+        next_button = next_button.find("span", text="Selanjutnya")
+    next_url = next_button.parent["href"] if (next_button) else None
+    return next_url
+
+##### Format Element #####
+def fmt_content(contents):
+    """Format content and remove non-content paragraph blocks"""
+    clr = [
+        content.text for content in contents
+        if ("baca juga" not in content.text.lower()) \
+        and ("lihat juga" not in content.text.lower()) \
+        and ("saksikan" not in content.text.lower())
+    ]
+    fmt = ' '.join(clr)
+    return fmt
 
 ###### Main ######
 def scraper(category, url, delay, dt, producer):
@@ -75,7 +112,7 @@ def scraper(category, url, delay, dt, producer):
         cnt = extract_all_news(producer, log, page_html, delay)
         log.add_news_count(cnt)
 
-        next_url = get_next_page_url(page_html)
+        next_url = get_next_index_page_url(page_html)
         if (next_url):
             [current_url, page_html] = navigate_page(next_url, delay, log)
         else:
