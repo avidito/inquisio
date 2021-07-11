@@ -8,7 +8,7 @@ from . import Logger, reformat_dt, cvt_ts, split_date, export_news
 def navigate_page(url, delay, log, query=None, path=None, data=None):
     """Navigate to new page"""
 
-    # Inject path to url
+    # Prepare POST data
     url_fin = url
     if (data):
         [year, month, day] = split_date(data["date"])
@@ -48,6 +48,7 @@ def extract_news_content(url, delay, log):
     """Extracting more detail information from news article page"""
 
     [current_url, news_html] = navigate_page(url, delay, log)
+
     author = news_html.find("div", attrs={"class": "namerep"}).find(text=True)
     tags = [tag.text for tag in news_html.find("div", attrs={"class": "newtag"}).find_all("li")]
     content = extract_paginate_content(news_html, delay, log)
@@ -56,6 +57,7 @@ def extract_news_content(url, delay, log):
 
 def extract_paginate_content(page, delay, log):
     """Extracting news content from all pagination in the article"""
+
     content = []
     current_page = page
     while(1):
