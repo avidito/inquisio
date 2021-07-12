@@ -31,11 +31,11 @@ def extract_news(news, delay, log):
     title = news.find("div", attrs={"class": "indeks-title"}).text
     category = news.find("div", attrs={"class": "mini-info"}).find("li").text
     url = news.find("div", attrs={"class": "indeks-title"}).a["href"]
-    post_dt = news.find("div", attrs={"class": "mini-info"}).find("p").text
+    post_dt = cvt_ts(news.find("div", attrs={"class": "mini-info"}).find("p").text)
 
     info = extract_news_content(url, delay, log)
 
-    news_data = {"title": title, "category": category, "author": info["author"], "post_dt": cvt_ts(post_dt), "tags": info["tags"], "content": info["content"], "url": url}
+    news_data = {"title": title, "category": category, "author": info["author"], "post_dt": post_dt, "tags": info["tags"], "content": info["content"], "url": url}
     export_news(news_data)
 
 def extract_news_content(url, delay, log):
@@ -51,9 +51,21 @@ def extract_news_content(url, delay, log):
 
 def extract_paginate_content(page, delay, log):
     """Extract news content"""
-    
-    return None
 
+    content = []
+    current_page = page
+    while(1):
+        current_page_content = current_page.find("div", {"id": "content"})
+        clr_content = ops_clear_nonnews(current_page_content)
+        content.append(clr_content)
+
+        next_url = get_next_news_page_url(current_page)
+        if (next_url):
+            [current_url, current_page] = navigate_page(next_url, delay, log)
+        else:
+            break
+
+    return " ".join(content)
 
 ###### Get Element ######
 def get_next_index_page_url(page):
@@ -66,10 +78,28 @@ def get_next_index_page_url(page):
 def get_next_news_page_url(page):
     """Get next page url from next button"""
 
-    next_url = None
     next_button = page.find("li", attrs={"class": "article-next"})
     next_url = next_button.a["href"] if (next_button) else None
     return next_url
+
+###### Operations ######
+def ops_clear_nonnews(content_blocks):
+    content_txt = []
+    for block in content_blocks:
+        try:
+            txt = block.text if (block.name != "div") else ''
+        except AttributeError:
+            txt = str(block)
+        finally:
+            content_txt.append(txt)
+
+    content_clr = [
+        txt for txt in content_txt \
+        if (txt != "") \
+        and ("baca juga" not in txt)
+    ]
+
+    return " ".join(content_clr)
 
 ###### Main ######
 def scraper(category, url, delay, dt, producer):
