@@ -43,8 +43,18 @@ def extract_news_content(url, delay, log):
 
     [current_url, news_html] = navigate_page(url, delay, log)
 
-    author = news_html.find("a", attrs={"rel": "author"}).text
-    tags = [tag.text for tag in news_html.find("div", attrs={"class": "tag-list"}).find_all("li")]
+    # Author
+    author_block = news_html.find("a", attrs={"rel": "author"})
+    author = author_block.text if (author_block) else news_html.find("div", attrs={"class": "author"}).text
+
+    # Tags
+    tags_list_block = news_html.find("div", attrs={"class": "tag-list"})
+    if (tags_list_block):
+        tags_list = tags_list_block
+    else:
+        tags_list = news_html.find("div", attrs={"class": "category-relative"})
+    tags = [tag.text for tag in tags_list.find_all("li")]
+
     content = extract_paginate_content(news_html, delay, log)
 
     return {"author": author, "tags": tags, "content": content}
@@ -55,7 +65,11 @@ def extract_paginate_content(page, delay, log):
     content = []
     current_page = page
     while(1):
-        current_page_content = current_page.find("div", {"id": "content"})
+        page_article = current_page.find("div", {"id": "content"})
+        if (page_article):
+            current_page_content = page_article
+        else:
+            current_page_content = current_page.find("div", {"class": "article"})
         clr_content = ops_clear_nonnews(current_page_content)
         content.append(clr_content)
 

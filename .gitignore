@@ -1,3 +1,5 @@
 *-env/
 result.json
 __pycache__/
+
+streamer/settings.py
