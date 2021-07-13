@@ -37,11 +37,11 @@ def extract_news(news, delay, log):
     title = news.find("h4", attrs={"class": "f17"}).text
     category = news.find("span", attrs={"class": "c-news"}).a.text
     url = news.find("h4", attrs={"class": "f17"}).a.get("href")
-    post_dt = str(news.find("time", attrs={"class": "category-hardnews"}).span.next_sibling.string)
+    post_dt = cvt_ts(str(news.find("time", attrs={"class": "category-hardnews"}).span.next_sibling.string))
 
     info = extract_news_content(url, delay, log)
 
-    news_data = {"title": title, "category": category, "author": info["author"], "post_dt": cvt_ts(post_dt), "tags": info["tags"], "content": info["content"], "url": url}
+    news_data = {"title": title, "category": category, "author": info["author"], "post_dt": post_dt, "tags": info["tags"], "content": info["content"], "url": url}
     export_news(news_data)
 
 def extract_news_content(url, delay, log):
@@ -53,7 +53,7 @@ def extract_news_content(url, delay, log):
     tags = [tag.text for tag in news_html.find("div", attrs={"class": "newtag"}).find_all("li")]
     content = extract_paginate_content(news_html, delay, log)
 
-    return {"author": author, "tags": tags, "content": fmt_content(content)}
+    return {"author": author, "tags": tags, "content": content}
 
 def extract_paginate_content(page, delay, log):
     """Extracting news content from all pagination in the article"""
@@ -62,7 +62,8 @@ def extract_paginate_content(page, delay, log):
     current_page = page
     while(1):
         current_page_content = current_page.find("div", attrs={"id": "contentx"}).find_all("p")
-        content.extend(current_page_content)
+        clr_content = ops_clear_nonnews(current_page_content)
+        content.append(clr_content)
 
         next_url = get_next_news_page_url(current_page)
         if (next_url):
@@ -70,7 +71,7 @@ def extract_paginate_content(page, delay, log):
         else:
             break
 
-    return content
+    return " ".join(content)
 
 ###### Get Element ######
 def get_next_index_page_url(page):
@@ -91,17 +92,17 @@ def get_next_news_page_url(page):
         next_url = next_url if (next_url != "#") else None
     return next_url
 
-##### Format Element #####
-def fmt_content(contents):
-    """Format content and remove non-content paragraph blocks"""
-    clr = [
-        content.text for content in contents
+###### Operations ######
+def ops_clear_nonnews(content_blocks):
+    """Clear non-news (e.g., ads, another news link) from content"""
+
+    content_clr = [
+        content.text for content in content_blocks
         if ("baca juga" not in content.text.lower()) \
         and ("lihat juga" not in content.text.lower()) \
         and ("saksikan" not in content.text.lower())
     ]
-    fmt = ' '.join(clr)
-    return fmt
+    return " ".join(content_clr)
 
 ###### Main ######
 def scraper(category, url, delay, dt, producer):

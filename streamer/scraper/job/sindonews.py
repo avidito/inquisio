@@ -84,6 +84,8 @@ def get_next_news_page_url(page):
 
 ###### Operations ######
 def ops_clear_nonnews(content_blocks):
+    """Clear non-news (e.g., ads, another news link) from content"""
+
     content_txt = []
     for block in content_blocks:
         try:
