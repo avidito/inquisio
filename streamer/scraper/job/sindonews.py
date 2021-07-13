@@ -2,20 +2,14 @@ import requests
 import time
 from bs4 import BeautifulSoup
 
-from . import Logger, reformat_dt, cvt_ts, split_date, export_news
+from . import Logger, reformat_dt, cvt_ts, export_news
 
 ###### Navigation ######
 def navigate_page(url, delay, log, query=None, path=None, data=None):
     """Navigate to new page"""
 
-    # Prepare POST data
-    url_fin = url
-    if (data):
-        [year, month, day] = split_date(data["date"])
-        data = {"thn": year, "bln": month, "tgl": day}
-
     # Get page html
-    req = requests.post(url_fin, data=data, allow_redirects=True) if (data) else requests.get(url_fin)
+    req = requests.get(url, params=query)
     log.log_navigation(req.url, req.status_code, delay)
     time.sleep(delay)
     return req.url, BeautifulSoup(req.content, "lxml")
@@ -24,7 +18,7 @@ def navigate_page(url, delay, log, query=None, path=None, data=None):
 def extract_all_news(producer, log, page, delay):
     """Extract all news provided in current page"""
 
-    news_list = page.find("div", attrs={"class": "news-content"}).find_all("li")
+    news_list = page.find("div", attrs={"class": "indeks-news"}).find_all("div", attrs={"class": "indeks-rows"})
     cnt = 0
     for news in news_list:
         extract_news(news, delay, log)
@@ -34,10 +28,10 @@ def extract_all_news(producer, log, page, delay):
 def extract_news(news, delay, log):
     """Extract information from single news"""
 
-    title = news.find("h4", attrs={"class": "f17"}).text
-    category = news.find("span", attrs={"class": "c-news"}).a.text
-    url = news.find("h4", attrs={"class": "f17"}).a.get("href")
-    post_dt = cvt_ts(str(news.find("time", attrs={"class": "category-hardnews"}).span.next_sibling.string))
+    title = news.find("div", attrs={"class": "indeks-title"}).text
+    category = news.find("div", attrs={"class": "mini-info"}).find("li").text
+    url = news.find("div", attrs={"class": "indeks-title"}).a["href"]
+    post_dt = cvt_ts(news.find("div", attrs={"class": "mini-info"}).find("p").text)
 
     info = extract_news_content(url, delay, log)
 
@@ -49,19 +43,19 @@ def extract_news_content(url, delay, log):
 
     [current_url, news_html] = navigate_page(url, delay, log)
 
-    author = news_html.find("div", attrs={"class": "namerep"}).find(text=True)
-    tags = [tag.text for tag in news_html.find("div", attrs={"class": "newtag"}).find_all("li")]
+    author = news_html.find("a", attrs={"rel": "author"}).text
+    tags = [tag.text for tag in news_html.find("div", attrs={"class": "tag-list"}).find_all("li")]
     content = extract_paginate_content(news_html, delay, log)
 
     return {"author": author, "tags": tags, "content": content}
 
 def extract_paginate_content(page, delay, log):
-    """Extracting news content from all pagination in the article"""
+    """Extract news content"""
 
     content = []
     current_page = page
     while(1):
-        current_page_content = current_page.find("div", attrs={"id": "contentx"}).find_all("p")
+        current_page_content = current_page.find("div", {"id": "content"})
         clr_content = ops_clear_nonnews(current_page_content)
         content.append(clr_content)
 
@@ -84,34 +78,39 @@ def get_next_index_page_url(page):
 def get_next_news_page_url(page):
     """Get next page url from next button"""
 
-    next_url = None
-    next_button = page.find("div", attrs={"class": "next"})
-    if (next_button):
-        next_button = next_button.find("span", text="Selanjutnya")
-        next_url = next_button.parent["href"] if (next_button) else None
-        next_url = next_url if (next_url != "#") else None
+    next_button = page.find("li", attrs={"class": "article-next"})
+    next_url = next_button.a["href"] if (next_button) else None
     return next_url
 
 ###### Operations ######
 def ops_clear_nonnews(content_blocks):
     """Clear non-news (e.g., ads, another news link) from content"""
 
+    content_txt = []
+    for block in content_blocks:
+        try:
+            txt = block.text if (block.name != "div") else ''
+        except AttributeError:
+            txt = str(block)
+        finally:
+            content_txt.append(txt)
+
     content_clr = [
-        content.text for content in content_blocks
-        if ("baca juga" not in content.text.lower()) \
-        and ("lihat juga" not in content.text.lower()) \
-        and ("saksikan" not in content.text.lower())
+        txt for txt in content_txt \
+        if (txt != "") \
+        and ("baca juga" not in txt)
     ]
+
     return " ".join(content_clr)
 
 ###### Main ######
 def scraper(category, url, delay, dt, producer):
-    log = Logger("okezone", category, delay=delay, url=url)
+    log = Logger("sindonews", category, delay=delay, url=url)
     all_news_cnt = 0
 
     # Go to initial point
     log.log_start()
-    [current_url, page_html] = navigate_page(url, delay, log, path={"date": dt})
+    [current_url, page_html] = navigate_page(url, delay, log, query={"t": dt})
 
     while(1):
         cnt = extract_all_news(producer, log, page_html, delay)
