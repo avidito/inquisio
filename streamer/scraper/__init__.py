@@ -2,6 +2,7 @@
 from .job.okezone import scraper as okezone_scraper
 from .job.sindonews import scraper as sindonews_scraper
 from .job.detik import scraper as detik_scraper
+from .job.kompas import scraper as kompas_scraper
 
 # Scraper runner wrapper
 def run_all_categories(scraper, meta):
@@ -15,6 +16,7 @@ scraper_func = {
     "okezone": okezone_scraper,
     "sindonews": sindonews_scraper,
     "detik": detik_scraper,
+    "kompas": kompas_scraper
 }
 
 # Run all scrapper batch runner
