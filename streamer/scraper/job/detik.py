@@ -3,7 +3,7 @@ import time
 from bs4 import BeautifulSoup
 from datetime import datetime
 
-from . import Logger, reformat_dt, cvt_ts, export_news
+from . import Logger, reformat_dt, export_news
 
 ###### Navigation ######
 def navigate_page(url, delay, log, query=None, path=None, data=None):
@@ -31,12 +31,11 @@ def extract_news(news, delay, log):
 
     title = news.find("h3", attrs={"class": "media__title"}).text
     url = news.find("a", attrs={"class": "media__link"}).get("href")
-    category = url.split("//")[1].split(".")[0]
     post_dt = news.find("div", attrs={"class": "media__date"}).span.get("d-time")
 
     info = extract_news_content(url, delay, log)
 
-    news_data = {"title": title, "category": category, "author": info["author"], "post_dt": post_dt, "tags": info["tags"], "content": info["content"], "url": url}
+    news_data = {"title": title, "category": info["category"], "author": info["author"], "post_dt": post_dt, "tags": info["tags"], "content": info["content"], "url": url}
     export_news(news_data)
 
 def extract_news_content(url, delay, log):
@@ -47,26 +46,31 @@ def extract_news_content(url, delay, log):
     [current_url, news_html] = navigate_page(url, delay, log, params)
 
     # Category
-    # category = news_html.find("div", attrs={"class": "page__breadcrumb"}).find_all("a")[-1].text
+    category = news_html.find("div", attrs={"class": "page__breadcrumb"}).find_all("a")[-1].text
 
     # Author
-    author = news_html.find("div", attrs={"class": "detail__author"}).text
-    author = author.split(" - ")[0]
+    author_block = news_html.find("div", attrs={"class": "detail__author"}).text
+    author = author_block.split(" - ")[0]
 
     # Tags
     tags = [tag.text for tag in news_html.find_all("a", attrs={"class": "nav__item"})]
 
+    # Content
     content = extract_paginate_content(news_html, delay, log)
 
-    return {"author": author, "tags": tags, "content": content}
+    return {"category": category, "author": author, "tags": tags, "content": content}
 
 def extract_paginate_content(page, delay, log):
     """Extract news content"""
 
-    content = [p.text for p in page.find("div", attrs={"class": "detail__body-text"}).find_all("p")]
-    clr_content = ops_clear_nonnews(content)
+    content = []
+    page_article = page.find("div", attrs={"class": "detail__body-text"})
+    
+    content.append(page_article.find("strong").text)
+    content.append(page_article.find("strong").next_sibling.string)
+    content.extend([p.text for p in page_article.find_all("p")])
 
-    return clr_content
+    return " ".join(content)
 
 ###### Get Element ######
 def get_next_index_page_url(page):
@@ -75,35 +79,13 @@ def get_next_index_page_url(page):
     next_button = page.find("a", string="Next")
     next_url = next_button.get("href")
     return next_url
-    
-###### Operations ######
-def ops_clear_nonnews(content_blocks):
-    """Clear non-news (e.g., ads, another news link) from content"""
-
-    # content_txt = []
-    # for block in content_blocks:
-    #     try:
-    #         txt = block.text if (block.name != "div") else ''
-    #     except AttributeError:
-    #         txt = str(block)
-    #     finally:
-    #         content_txt.append(txt)
-
-    # content_clr = [
-    #     txt for txt in content_txt \
-    #     if (txt != "") \
-    #     and ("baca juga" not in txt)
-    # ]
-
-    return " ".join(content_blocks)
 
 ###### Main ######
 def scraper(category, url, delay, dt, producer):
     log = Logger("detik", category, delay=delay, url=url)
     all_news_cnt = 0
 
-    dt = datetime.strptime(dt, "%Y-%m-%d")
-    params = {"date": dt.strftime("%m/%d/%Y")}
+    params = {"date": reformat_dt(dt, "%Y-%m-%d", "%m/%d/%Y")}
 
     # Go to initial point
     log.log_start()
