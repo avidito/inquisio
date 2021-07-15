@@ -10,6 +10,11 @@ SCRAPER_META = {
         # ("international", "https://index.sindonews.com/index/9"),
         # ("sports", "https://index.sindonews.com/index/10"),
         ("edukasi", "https://index.sindonews.com/index/144")
+    ],
+    "detik": [
+        # ("finance", "https://finance.detik.com/indeks/"),
+        ("sport", "https://sport.detik.com/indeks/"),
+        # ("oto", "https://oto.detik.com/indeks/")
     ]
 }
 
