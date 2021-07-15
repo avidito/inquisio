@@ -12,15 +12,21 @@ def get_params():
 
 
 ########## Job Reporting ##########
-def create_job_report():
+def create_job_report(report_data):
     """Create job report"""
+    border = "#" * 50
     header = "Scraper Job Report"
     report = "\n\n".join([
-        header, gen_rpt_execution_details(), gen_rpt_params_report(), gen_rpt_scraper_result()
+        border,
+        header,
+        gen_rpt_execution_details(report_data),
+        gen_rpt_params_report(report_data),
+        gen_rpt_scraper_result(report_data),
+        border
     ])
     return report
 
-def gen_rpt_execution_details():
+def gen_rpt_execution_details(report_data):
     """Generate formatted execution details from job result data"""
 
     # Format data
@@ -37,7 +43,7 @@ def gen_rpt_execution_details():
     ])
     return execution_details
 
-def gen_rpt_params_report():
+def gen_rpt_params_report(report_data):
     """Generate formatted params from job result data"""
 
     # Format data
@@ -50,12 +56,12 @@ def gen_rpt_params_report():
     ])
     return params
 
-def gen_rpt_scraper_result():
+def gen_rpt_scraper_result(report_data):
     """Generate formatted scaper result from job result data"""
 
     # Format data
     header = "--- Scraper Result ---"
-    scraper_list = "\n\n".join([gen_rpt_scraper_info(*scraper_meta) for scraper_meta in [("detik", "meta")]])
+    scraper_list = "\n\n".join([gen_rpt_scraper_info(*scraper_meta) for scraper_meta in report_data.items()])
 
     # Assemble data
     scraper_result = "\n".join([
@@ -67,13 +73,18 @@ def gen_rpt_scraper_info(website, meta):
     """Generate formatted single scraper info from job result data"""
 
     # Format data
-    website = "> detik"
-    execution_time    = "    execution_time        : 40 minutes 23 seconds"
-    news_scraped      = "    news_scraped          : 60 news"
-    category_news_cnt = "    category (news_count) :\n" + "\n".join([f"        - {ctg} ({cnt})" for ctg, cnt in [("news", 30), ("finance", 12)]])
+    website = f"> {website}"
+    execution_time    = f"    execution_time        : ?? seconds"
+    news_scraped      = f"    news_scraped          : ?? news"
+    category_news_cnt = f"    category (news_count) :\n" + "\n".join([f"        - {info['category']} ({info['total_news']})" for info in meta])
 
     # Assemble data
     scraper_info = "\n".join([
         website, execution_time, news_scraped, category_news_cnt
     ])
     return scraper_info
+
+def export_report(report):
+    """Export report to txt file"""
+    with open("report.txt", "w+", encoding="utf-8") as file:
+        file.write(report)

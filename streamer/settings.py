@@ -16,3 +16,4 @@ SCRAPER_META = {
 ########## PRODUCER CONFIGURATION ##########
 TOPIC = "python-test"
 BOOTSTRAP_SERVER = "localhost:9092"
+ACTIVE = False

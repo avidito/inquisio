@@ -25,8 +25,8 @@ class Logger:
         """Logging job start"""
 
         dt_now, dt_nspc = self.get_datetime_namespace()
-        print(f"{dt_nspc} Starting scraper for `{self.website}` - `{self.category}`. Using parameters: {self.params}")
         self.start_time = dt_now
+        print(f"{dt_nspc} Starting scraper for `{self.website}` - `{self.category}`. Using parameters: {self.params}")
 
     def log_navigation(self, url, status_code, delay):
         """Logging page navigation"""
@@ -36,12 +36,27 @@ class Logger:
 
     def log_finish(self):
         """Logging job finish"""
-        self.end_time = datetime.now()
+
+        dt_now, dt_nspc = self.get_datetime_namespace()
+        self.end_time = dt_now
         self.duration = int((self.end_time - self.start_time).total_seconds())
+
         minutes = self.duration // 60
         seconds = self.duration % 60
-        dt_now, dt_nspc = self.get_datetime_namespace()
         print(f"{dt_nspc} Finishing web-scraping process for `{self.website}` - `{self.category}`. Total execution time: {minutes} minute(s), {seconds} second(s). Total extracted info: {self.cnt}")
+
+    def export_report(self):
+        """Exporting scraping job log for report"""
+
+        report = {
+            "website": self.website,
+            "category": self.category,
+            "start_time": self.start_time.strftime("%Y-%m-%d %H:%M:%S"),
+            "end_time": self.end_time.strftime("%Y-%m-%d %H:%M:%S"),
+            "duration": self.duration,
+            "total_news": self.cnt,
+        }
+        return report
 
 ##### Datetime / Time Utils #####
 def split_date(dt):

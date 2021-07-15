@@ -125,3 +125,4 @@ def scraper(category, url, delay, dt, producer):
             break
 
     log.log_finish()
+    return log.export_report()
