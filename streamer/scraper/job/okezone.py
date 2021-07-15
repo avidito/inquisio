@@ -27,7 +27,8 @@ def extract_all_news(producer, log, page, delay):
     news_list = page.find("div", attrs={"class": "news-content"}).find_all("li")
     cnt = 0
     for news in news_list:
-        extract_news(news, delay, log)
+        news_data = extract_news(news, delay, log)
+        producer.publish_data(news_data)
         cnt += 1
     return cnt
 
@@ -42,7 +43,7 @@ def extract_news(news, delay, log):
     info = extract_news_content(url, delay, log)
 
     news_data = {"title": title, "category": category, "author": info["author"], "post_dt": post_dt, "tags": info["tags"], "content": info["content"], "url": url}
-    export_news(news_data)
+    return news_data
 
 def extract_news_content(url, delay, log):
     """Extracting more detail information from news article page"""
