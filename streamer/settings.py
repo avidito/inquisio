@@ -17,9 +17,9 @@ SCRAPER_META = {
     #     # ("oto", "https://oto.detik.com/indeks/")
     # ],
     "kompas": [
-        # ("tren", "https://indeks.kompas.com/?site=tren"),
+        ("tren", "https://indeks.kompas.com/?site=tren"),
         # ("bola", "https://indeks.kompas.com/?site=bola"),
-        ("sains", "https://indeks.kompas.com/?site=sains")
+        # ("sains", "https://indeks.kompas.com/?site=sains")
     ]
 }
 

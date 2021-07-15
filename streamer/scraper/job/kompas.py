@@ -59,16 +59,17 @@ def extract_news_content(url, delay, log):
     tags = [tag.text for tag in news_html.find_all("a", attrs={"class": "tag__article__link"})]
 
     # Content
-    content = None #extract_paginate_content(news_html, delay, log)
+    content = extract_paginate_content(news_html, delay, log)
 
     return {"author": author_clr, "tags": tags, "content": content}
 
 def extract_paginate_content(page, delay, log):
     """Extract news content"""
 
-    content = [p.text for p in page.find("div", attrs={"class": "read__content"}).find_all("p")]
+    page_article = [p.text for p in page.find("div", attrs={"class": "read__content"}).find_all("p", recursive=False)]
+    content = ops_clear_nonnews(page_article)
 
-    return " ".join(content)
+    return content
 
 ###### Get Element ######
 def get_next_index_page_url(page):
@@ -77,6 +78,16 @@ def get_next_index_page_url(page):
     next_button = page.find("a", attrs={"class": "paging__link"}, string="Next")
     next_url = next_button.get("href") if (next_button) else None
     return next_url
+
+###### Operations ######
+def ops_clear_nonnews(content_blocks):
+    """Clear non-news (e.g., ads, another news link) from content"""
+    
+    content_clr = [
+        content for content in content_blocks
+        if (not content.lower().startswith("baca juga"))
+    ]
+    return " ".join(content_clr)
 
 ###### Main ######
 def scraper(category, url, delay, dt, producer):
