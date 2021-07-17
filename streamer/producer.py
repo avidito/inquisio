@@ -1,10 +1,11 @@
 from kafka import KafkaProducer
 from kafka.errors import NoBrokersAvailable
 import time
+import json
 
 def get_producer(params):
     """Get producer instance"""
-    
+
     topic = params.get("TOPIC")
     bootstrap_server = params.get("BOOTSTRAP_SERVER")
     active = params.get("ACTIVE")

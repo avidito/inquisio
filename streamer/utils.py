@@ -3,6 +3,7 @@ from settings import *
 
 def get_prompt():
     """Get prompted parameters when running scraper job"""
+
     key = ["DATE"]
     prompt = {key: value for key, value in zip(key, sys.argv[1:])}
     return prompt
@@ -17,10 +18,9 @@ def get_params():
     producer = {param: globals().get(param) for param in producer_params}
     return scraper, producer
 
-
-########## Job Reporting ##########
 def create_job_report(report_data, prompt_params):
     """Create job report"""
+
     border = "#" * 50
     header = "Scraper Job Report"
     report = "\n\n".join([
@@ -33,16 +33,28 @@ def create_job_report(report_data, prompt_params):
     ])
     return report
 
+def export_report(report):
+    """Export report to txt file"""
+
+    with open("report.txt", "w+", encoding="utf-8") as file:
+        file.write(report)
+
+########## Job Reporting ##########
 def gen_rpt_execution_details(report_data):
     """Generate formatted execution details from job result data"""
 
+    # Extract time attribute
+    [start_tm, end_tm, exec_tm] = extract_time_attr(report_data)
+    [cnt, scraper_list] = extract_job_meta(report_data)
+
     # Format data
     header = "--- Execution Details ---"
-    start_time     = "Start Time     : 2021-07-01 10:30:15"
-    end_time       = "Finish Time    : 2021-07-01 12:48:12"
-    execution_time = "Execution Time : 2 hour 17 minutes 57 seconds"
-    total_news     = "Total News     : 173"
-    active_scraper = "Active Scraper :\n" + "\n".join(["    - detik", "    - kompas"])
+    start_time     = f"Start Time     : {start_tm}"
+    end_time       = f"Finish Time    : {end_tm}"
+    execution_time = f"Execution Time : {exec_tm}"
+    total_news     = f"Total News     : {cnt}"
+    active_scraper = f"Active Scraper :\n" \
+                   + "\n".join(scraper_list)
 
     # Assemble data
     execution_details = "\n".join([
@@ -55,7 +67,7 @@ def gen_rpt_params_report(prompt_params):
 
     # Format data
     header = "--- Params ---"
-    param_list = "\n".join([f"> {name} = {value}" for name, value in [("job_date", "2021-07-13")]])
+    param_list = "\n".join([f"> {name} = {value}" for name, value in prompt_params.items()])
 
     # Assemble data
     params = "\n".join([
@@ -68,7 +80,10 @@ def gen_rpt_scraper_result(report_data):
 
     # Format data
     header = "--- Scraper Result ---"
-    scraper_list = "\n\n".join([gen_rpt_scraper_info(*scraper_meta) for scraper_meta in report_data.items()])
+    scraper_list = "\n\n".join([
+        gen_rpt_scraper_info(key, value) for key, value in report_data.items() \
+        if key not in ("start_dt", "end_dt")
+    ])
 
     # Assemble data
     scraper_result = "\n".join([
@@ -86,8 +101,8 @@ def gen_rpt_scraper_info(website, meta):
     # Format data
     website = f"> {website}"
     execution_time      = f"{spc}execution_time        : {convert_seconds_timeformat(total_time)}"
-    news_scraped        = f"{spc}news_scraped          : {total_news} news".rjust(4, " ")
-    category_news_count = f"{spc}category (news_count) :\n".rjust(4, " ") \
+    news_scraped        = f"{spc}news_scraped          : {total_news} news"
+    category_news_count = f"{spc}category (news_count) :\n" \
                         + "\n".join([f"{dbl_spc}- {ctg} ({cnt})" for ctg, cnt in ctg_cnt])
 
     # Assemble data
@@ -95,11 +110,6 @@ def gen_rpt_scraper_info(website, meta):
         website, execution_time, news_scraped, category_news_count
     ])
     return scraper_info
-
-def export_report(report):
-    """Export report to txt file"""
-    with open("report.txt", "w+", encoding="utf-8") as file:
-        file.write(report)
 
 ########## Report Operations ##########
 def extract_scraper_meta(meta):
@@ -138,3 +148,23 @@ def convert_seconds_timeformat(total_time=0):
         elif (tm == "second" and fmt == ""):
             fmt += f"0 {tm}"
     return fmt.lstrip()
+
+def extract_time_attr(report_data):
+    """Extracting time information from report data"""
+
+    start_tm = report_data["start_dt"].strftime("%Y-%m-%d %H:%M:%S")
+    end_tm = report_data["end_dt"].strftime("%Y-%m-%d %H:%M:%S")
+    exec_tm = str(int((report_data["end_dt"] - report_data["start_dt"]).total_seconds()))
+
+    return start_tm, end_tm, exec_tm
+
+def extract_job_meta(report_data):
+    """Extracting job metadata from report data"""
+
+    cnt = 0
+    scraper_list = []
+    for key, value in report_data.items():
+        if key not in ("start_dt", "end_dt"):
+            cnt += sum([info["total_news"] for info in value])
+            scraper_list.append(key)
+    return cnt, scraper_list
