@@ -19,9 +19,10 @@ scraper_func = {
 }
 
 # Run all scrapper batch runner
-def run_scraper(producer, params, dt):
-    meta = params["SCRAPER_META"]
-    delay = params["DELAY"]
+def run_scraper(producer, scraper_params, prompt_params):
+    meta = scraper_params["SCRAPER_META"]
+    delay = scraper_params["DELAY"]
+    dt = prompt_params["DATE"]
     all_reports = {}
 
     for scraper in meta.keys():

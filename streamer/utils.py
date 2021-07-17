@@ -1,4 +1,11 @@
+import sys
 from settings import *
+
+def get_prompt():
+    """Get prompted parameters when running scraper job"""
+    key = ["DATE"]
+    prompt = {key: value for key, value in zip(key, sys.argv[1:])}
+    return prompt
 
 def get_params():
     """Get parameters value from configuration file"""
@@ -12,7 +19,7 @@ def get_params():
 
 
 ########## Job Reporting ##########
-def create_job_report(report_data):
+def create_job_report(report_data, prompt_params):
     """Create job report"""
     border = "#" * 50
     header = "Scraper Job Report"
@@ -20,7 +27,7 @@ def create_job_report(report_data):
         border,
         header,
         gen_rpt_execution_details(report_data),
-        gen_rpt_params_report(report_data),
+        gen_rpt_params_report(prompt_params),
         gen_rpt_scraper_result(report_data),
         border
     ])
@@ -43,7 +50,7 @@ def gen_rpt_execution_details(report_data):
     ])
     return execution_details
 
-def gen_rpt_params_report(report_data):
+def gen_rpt_params_report(prompt_params):
     """Generate formatted params from job result data"""
 
     # Format data
