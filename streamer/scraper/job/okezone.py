@@ -2,7 +2,7 @@ import requests
 import time
 from bs4 import BeautifulSoup
 
-from . import Logger, reformat_dt, cvt_ts, split_date, export_news
+from . import Logger, reformat_dt, cvt_ts, split_date
 
 ###### Navigation ######
 def navigate_page(url, delay, log, query=None, path=None, data=None):
@@ -108,7 +108,6 @@ def ops_clear_nonnews(content_blocks):
 ###### Main ######
 def scraper(category, url, delay, dt, producer):
     log = Logger("okezone", category, delay=delay, url=url)
-    all_news_cnt = 0
 
     # Go to initial point
     log.log_start()

@@ -1,9 +1,8 @@
 import requests
 import time
 from bs4 import BeautifulSoup
-from datetime import datetime
 
-from . import Logger, reformat_dt, cvt_ts, export_news
+from . import Logger, reformat_dt, cvt_ts
 
 ###### Navigation ######
 def navigate_page(url, delay, log, query=None, path=None, data=None):
@@ -22,7 +21,8 @@ def extract_all_news(producer, log, page, delay):
     news_list = page.find_all("div", attrs={"class": "article__list"})
     cnt = 0
     for news in news_list:
-        extract_news(news, delay, log)
+        news_data = extract_news(news, delay, log)
+        producer.publish_data(news_data)
         cnt += 1
     return cnt
 
@@ -37,14 +37,12 @@ def extract_news(news, delay, log):
     info = extract_news_content(url, delay, log)
 
     news_data = {"title": title, "category": category, "author": info["author"], "post_dt": post_dt, "tags": info["tags"], "content": info["content"], "url": url}
-    export_news(news_data)
+    return news_data
 
 def extract_news_content(url, delay, log):
     """Extracting more detail information from news article page"""
 
-    params = {"page": "all"}
-
-    [current_url, news_html] = navigate_page(url, delay, log, params)
+    [current_url, news_html] = navigate_page(url, delay, log, query={"page": "all"})
 
     # Author
     author_block = news_html.find("div", attrs={"id": "penulis"})
@@ -82,7 +80,7 @@ def get_next_index_page_url(page):
 ###### Operations ######
 def ops_clear_nonnews(content_blocks):
     """Clear non-news (e.g., ads, another news link) from content"""
-    
+
     content_clr = [
         content for content in content_blocks
         if (not content.lower().startswith("baca juga"))
@@ -92,13 +90,10 @@ def ops_clear_nonnews(content_blocks):
 ###### Main ######
 def scraper(category, url, delay, dt, producer):
     log = Logger("kompas", category, delay=delay, url=url)
-    all_news_cnt = 0
-
-    params = {"date": dt}
 
     # Go to initial point
     log.log_start()
-    [current_url, page_html] = navigate_page(url, delay, log, params)
+    [current_url, page_html] = navigate_page(url, delay, log, query={"date": dt})
 
     while(1):
         cnt = extract_all_news(producer, log, page_html, delay)
@@ -111,3 +106,4 @@ def scraper(category, url, delay, dt, producer):
             break
 
     log.log_finish()
+    return log.export_report()
