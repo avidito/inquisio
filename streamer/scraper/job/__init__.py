@@ -79,6 +79,14 @@ def cvt_ts(dt):
     parsed = dateparser.parse(dt.replace("'", "").replace("Minggu", "Ahad"), languages=["id"])
     return int(parsed.timestamp())
 
+##### Extraction Utils #####
+def check_url(url, excluded_url):
+    for ex_url in excluded_url:
+        if (ex_url in url):
+            return False
+        else:
+            return True
+
 # TEMPORARY
 def export_news(news):
     """Export news information to csv"""

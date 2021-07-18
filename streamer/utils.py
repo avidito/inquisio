@@ -11,7 +11,7 @@ def get_prompt():
 def get_params():
     """Get parameters value from configuration file"""
 
-    scraper_params = ["DELAY", "SCRAPER_META"]
+    scraper_params = ["DELAY", "SCRAPER_META", "EXCLUDED_URLS"]
     producer_params = ["TOPIC", "BOOTSTRAP_SERVER"]
 
     scraper = {param: globals().get(param) for param in scraper_params}

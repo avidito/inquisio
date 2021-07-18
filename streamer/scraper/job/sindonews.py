@@ -2,7 +2,8 @@ import requests
 import time
 from bs4 import BeautifulSoup
 
-from . import Logger, reformat_dt, cvt_ts
+from . import Logger, reformat_dt, cvt_ts, check_url
+from . import export_news # For testing purpose
 
 ###### Navigation ######
 def navigate_page(url, delay, log, query=None, path=None, data=None):
@@ -15,34 +16,42 @@ def navigate_page(url, delay, log, query=None, path=None, data=None):
     return req.url, BeautifulSoup(req.content, "lxml")
 
 ###### Extraction ######
-def extract_all_news(producer, log, page, delay):
+def extract_all_news(producer, log, page, excluded_url, delay):
     """Extract all news provided in current page"""
 
     news_list = page.find("div", attrs={"class": "indeks-news"}).find_all("div", attrs={"class": "indeks-rows"})
     cnt = 0
     for news in news_list:
-        news_data = extract_news(news, delay, log)
-        producer.publish_data(news_data)
+        news_data = extract_news(news, delay, excluded_url, log)
+        if (news_data):
+            producer.publish_data(news_data)
+            export_news(news_data)
         cnt += 1
     return cnt
 
-def extract_news(news, delay, log):
+def extract_news(news, delay, excluded_url, log):
     """Extract information from single news"""
 
+    # Begin Extraction
     title = news.find("div", attrs={"class": "indeks-title"}).text
     category = news.find("div", attrs={"class": "mini-info"}).find("li").text
     url = news.find("div", attrs={"class": "indeks-title"}).a["href"]
     post_dt = cvt_ts(news.find("div", attrs={"class": "mini-info"}).find("p").text)
 
-    info = extract_news_content(url, delay, log)
+    # If URL is included in excluded_url
+    info = extract_news_content(url, excluded_url, delay, log)
+    if (info is None):
+        return None
 
     news_data = {"title": title, "category": category, "author": info["author"], "post_dt": post_dt, "tags": info["tags"], "content": info["content"], "url": url}
     return news_data
 
-def extract_news_content(url, delay, log):
+def extract_news_content(url, excluded_url, delay, log):
     """Extracting more detail information from news article page"""
 
-    [current_url, news_html] = navigate_page(url, delay, log)
+    [current_url, news_html] = navigate_page(url, delay, log, query={"showpage": "all"})
+    if (not check_url(current_url, excluded_url)):
+        return None
 
     # Author
     author_block = news_html.find("a", attrs={"rel": "author"})
@@ -63,22 +72,10 @@ def extract_news_content(url, delay, log):
 def extract_paginate_content(page, delay, log):
     """Extract news content"""
 
-    content = []
-    current_page = page
-    while(1):
-        page_article = current_page.find("div", {"id": "content"})
-        if (page_article):
-            current_page_content = page_article
-        else:
-            current_page_content = current_page.find("div", {"class": "article"})
-        clr_content = ops_clear_nonnews(current_page_content)
-        content.append(clr_content)
-
-        next_url = get_next_news_page_url(current_page)
-        if (next_url):
-            [current_url, current_page] = navigate_page(next_url, delay, log)
-        else:
-            break
+    page_article = page.find("div", {"id": "content"})
+    if (page_article is None):
+        page_article = page.find("div", {"class": "article"})
+    content = ops_clear_nonnews(page_article)
 
     return " ".join(content)
 
@@ -88,13 +85,6 @@ def get_next_index_page_url(page):
 
     next_button = page.find("a", attrs={"rel": "next"})
     next_url = next_button["href"] if (next_button) else None
-    return next_url
-
-def get_next_news_page_url(page):
-    """Get next page url from next button"""
-
-    next_button = page.find("li", attrs={"class": "article-next"})
-    next_url = next_button.a["href"] if (next_button) else None
     return next_url
 
 ###### Operations ######
@@ -119,7 +109,7 @@ def ops_clear_nonnews(content_blocks):
     return " ".join(content_clr)
 
 ###### Main ######
-def scraper(category, url, delay, dt, producer):
+def scraper(category, url, delay, dt, excluded_url, producer):
     log = Logger("sindonews", category, delay=delay, url=url)
 
     # Go to initial point
@@ -127,7 +117,7 @@ def scraper(category, url, delay, dt, producer):
     [current_url, page_html] = navigate_page(url, delay, log, query={"t": dt})
 
     while(1):
-        cnt = extract_all_news(producer, log, page_html, delay)
+        cnt = extract_all_news(producer, log, page_html, excluded_url, delay)
         log.add_news_count(cnt)
 
         next_url = get_next_index_page_url(page_html)
