@@ -9,9 +9,11 @@ SCRAPER_META = {
     "kompas": [
         # ("tren", "https://indeks.kompas.com/?site=tren"),
         # ("bola", "https://indeks.kompas.com/?site=bola"),
-        ("sains", "https://indeks.kompas.com/?site=sains")
+        # ("sains", "https://indeks.kompas.com/?site=sains")
     ],
     "okezone": [
+        ("news", "https://news.okezone.com/indeks"),
+        # ("finance", "https://economy.okezone.com/indeks")
         # ("bola", "https://bola.okezone.com/indeks/"),
         # ("travel", "https://travel.okezone.com/indeks")
     ],
@@ -39,6 +41,11 @@ EXCLUDED_URLS = {
     },
     "kompas": {},
     "okezone": {
+        "news": [
+            "https://news.okezone.com/play/",
+            "https://news.okezone.com/view/",
+            "https://news.okezone.com/detail/"
+        ],
         "bola": [
             "https://bola.okezone.com/play",
             "https://bola.okezone.com/view"
@@ -53,4 +60,4 @@ EXCLUDED_URLS = {
 ########## PRODUCER CONFIGURATION ##########
 TOPIC = "python-topic"
 BOOTSTRAP_SERVER = "localhost:9092"
-ACTIVE = True
+ACTIVE = False
