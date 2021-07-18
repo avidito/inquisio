@@ -49,7 +49,7 @@ def extract_news(news, delay, excluded_url, log):
 def extract_news_content(url, excluded_url, delay, log):
     """Extracting more detail information from news article page"""
 
-    [current_url, news_html] = navigate_page(url, delay, log)
+    [current_url, news_html] = navigate_page(url, delay, log, query={"showpage": "all"})
     if (not check_url(current_url, excluded_url)):
         return None
 
@@ -72,22 +72,10 @@ def extract_news_content(url, excluded_url, delay, log):
 def extract_paginate_content(page, delay, log):
     """Extract news content"""
 
-    content = []
-    current_page = page
-    while(1):
-        page_article = current_page.find("div", {"id": "content"})
-        if (page_article):
-            current_page_content = page_article
-        else:
-            current_page_content = current_page.find("div", {"class": "article"})
-        clr_content = ops_clear_nonnews(current_page_content)
-        content.append(clr_content)
-
-        next_url = get_next_news_page_url(current_page)
-        if (next_url):
-            [current_url, current_page] = navigate_page(next_url, delay, log)
-        else:
-            break
+    page_article = page.find("div", {"id": "content"})
+    if (page_article is None):
+        page_article = page.find("div", {"class": "article"})
+    content = ops_clear_nonnews(page_article)
 
     return " ".join(content)
 
@@ -97,13 +85,6 @@ def get_next_index_page_url(page):
 
     next_button = page.find("a", attrs={"rel": "next"})
     next_url = next_button["href"] if (next_button) else None
-    return next_url
-
-def get_next_news_page_url(page):
-    """Get next page url from next button"""
-
-    next_button = page.find("li", attrs={"class": "article-next"})
-    next_url = next_button.a["href"] if (next_button) else None
     return next_url
 
 ###### Operations ######
