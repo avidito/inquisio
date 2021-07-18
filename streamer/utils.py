@@ -1,11 +1,23 @@
 import sys
+from datetime import datetime
 from settings import *
 
 def get_prompt():
     """Get prompted parameters when running scraper job"""
 
-    key = ["DATE"]
-    prompt = {key: value for key, value in zip(key, sys.argv[1:])}
+    keys = ["DATE", "MODE"]
+    defaults = [
+        datetime.now().strftime("%Y-%m-%d"),    # DATE
+        "normal"                                # MODE
+    ]
+    prompt = {key: value.lower() for key, value in zip(keys, sys.argv[1:])}
+
+    # Fill default value for missing argument
+    for key, default in zip(keys, defaults):
+        if (prompt.get(key)):
+            continue
+        prompt[key] = default
+
     return prompt
 
 def get_params():
