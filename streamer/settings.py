@@ -4,12 +4,12 @@ SCRAPER_META = {
     "detik": [
         # ("finance", "https://finance.detik.com/indeks/"),
         # ("sport", "https://sport.detik.com/indeks/"),
-        ("oto", "https://oto.detik.com/indeks/")
+        # ("oto", "https://oto.detik.com/indeks/")
     ],
     "kompas": [
         # ("tren", "https://indeks.kompas.com/?site=tren"),
         # ("bola", "https://indeks.kompas.com/?site=bola"),
-        # ("sains", "https://indeks.kompas.com/?site=sains")
+        ("sains", "https://indeks.kompas.com/?site=sains")
     ],
     "okezone": [
         # ("bola", "https://bola.okezone.com/indeks/"),

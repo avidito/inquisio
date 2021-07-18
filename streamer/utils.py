@@ -51,7 +51,7 @@ def gen_rpt_execution_details(report_data):
     header = "--- Execution Details ---"
     start_time     = f"Start Time     : {start_tm}"
     end_time       = f"Finish Time    : {end_tm}"
-    execution_time = f"Execution Time : {exec_tm}"
+    execution_time = f"Execution Time : {convert_seconds_timeformat(exec_tm)}"
     total_news     = f"Total News     : {cnt}"
     active_scraper = f"Active Scraper :\n" \
                    + "\n".join(scraper_list)
@@ -154,7 +154,7 @@ def extract_time_attr(report_data):
 
     start_tm = report_data["start_dt"].strftime("%Y-%m-%d %H:%M:%S")
     end_tm = report_data["end_dt"].strftime("%Y-%m-%d %H:%M:%S")
-    exec_tm = str(int((report_data["end_dt"] - report_data["start_dt"]).total_seconds()))
+    exec_tm = int((report_data["end_dt"] - report_data["start_dt"]).total_seconds())
 
     return start_tm, end_tm, exec_tm
 
