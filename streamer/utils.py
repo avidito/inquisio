@@ -12,7 +12,7 @@ def get_params():
     """Get parameters value from configuration file"""
 
     scraper_params = ["DELAY", "SCRAPER_META", "EXCLUDED_URLS"]
-    producer_params = ["TOPIC", "BOOTSTRAP_SERVER"]
+    producer_params = ["TOPIC", "BOOTSTRAP_SERVER", "ACTIVE"]
 
     scraper = {param: globals().get(param) for param in scraper_params}
     producer = {param: globals().get(param) for param in producer_params}

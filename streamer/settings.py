@@ -3,8 +3,8 @@ DELAY = 10
 SCRAPER_META = {
     "detik": [
         # ("finance", "https://finance.detik.com/indeks/"),
-        ("sport", "https://sport.detik.com/indeks/"),
-        # ("oto", "https://oto.detik.com/indeks/")
+        # ("sport", "https://sport.detik.com/indeks/"),
+        ("oto", "https://oto.detik.com/indeks/")
     ],
     "kompas": [
         # ("tren", "https://indeks.kompas.com/?site=tren"),
@@ -32,6 +32,9 @@ EXCLUDED_URLS = {
         "sport": [
             "20.detik.com/",
             "https://sport.detik.com/fotosport/"
+        ],
+        "oto": [
+            "20.detik.com/"
         ]
     },
     "kompas": {},
@@ -48,6 +51,6 @@ EXCLUDED_URLS = {
 }
 
 ########## PRODUCER CONFIGURATION ##########
-TOPIC = "python-test"
+TOPIC = "python-topic"
 BOOTSTRAP_SERVER = "localhost:9092"
-ACTIVE = False
+ACTIVE = True

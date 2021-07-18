@@ -26,7 +26,7 @@ def extract_all_news(producer, log, page, excluded_url, delay):
         if (news_data):
             producer.publish_data(news_data)
             export_news(news_data) # For testing purpose
-        cnt += 1
+            cnt += 1
     return cnt
 
 def extract_news(news, delay, excluded_url, log):
