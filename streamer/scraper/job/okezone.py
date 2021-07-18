@@ -22,7 +22,7 @@ def navigate_page(url, delay, log, query=None, path=None, data=None):
     return req.url, BeautifulSoup(req.content, "lxml")
 
 ###### Extraction ######
-def extract_all_news(producer, log, page, excluded_url, delay):
+def extract_all_news(producer, log, page, excluded_url, delay, mode):
     """Extract all news provided in current page"""
 
     news_list = page.find("div", attrs={"class": "news-content"}).find_all("li")
@@ -31,7 +31,8 @@ def extract_all_news(producer, log, page, excluded_url, delay):
         news_data = extract_news(news, delay, excluded_url, log)
         if (news_data):
             producer.publish_data(news_data)
-            export_news(news_data) # For testing purpose
+            if (mode == "debug"):
+                export_news(news_data) # For testing purpose
             cnt += 1
     return cnt
 
@@ -115,7 +116,7 @@ def ops_clear_nonnews(content_blocks):
     return " ".join(content_clr)
 
 ###### Main ######
-def scraper(category, url, delay, dt, excluded_url, producer):
+def scraper(category, url, delay, dt, excluded_url, producer, mode):
     log = Logger("okezone", category, delay=delay, url=url)
 
     # Go to initial point
@@ -123,7 +124,7 @@ def scraper(category, url, delay, dt, excluded_url, producer):
     [current_url, page_html] = navigate_page(url, delay, log, query={"date": dt})
 
     while(1):
-        cnt = extract_all_news(producer, log, page_html, excluded_url, delay)
+        cnt = extract_all_news(producer, log, page_html, excluded_url, delay, mode)
         log.add_news_count(cnt)
 
         next_url = get_next_index_page_url(page_html)
