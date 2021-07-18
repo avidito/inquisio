@@ -84,8 +84,7 @@ def check_url(url, excluded_url):
     for ex_url in excluded_url:
         if (ex_url in url):
             return False
-        else:
-            return True
+    return True
 
 # TEMPORARY
 def export_news(news):

@@ -3,7 +3,7 @@ DELAY = 10
 SCRAPER_META = {
     "detik": [
         # ("finance", "https://finance.detik.com/indeks/"),
-        # ("sport", "https://sport.detik.com/indeks/"),
+        ("sport", "https://sport.detik.com/indeks/"),
         # ("oto", "https://oto.detik.com/indeks/")
     ],
     "kompas": [
@@ -16,7 +16,7 @@ SCRAPER_META = {
         # ("travel", "https://travel.okezone.com/indeks")
     ],
     "sindonews": [
-        ("daerah", "https://index.sindonews.com/index/7"),
+        # ("daerah", "https://index.sindonews.com/index/7"),
         # ("international", "https://index.sindonews.com/index/9"),
         # ("sports", "https://index.sindonews.com/index/10"),
         # ("edukasi", "https://index.sindonews.com/index/144")
@@ -32,9 +32,6 @@ EXCLUDED_URLS = {
         "sport": [
             "20.detik.com/",
             "https://sport.detik.com/fotosport/"
-        ],
-        "oto": [
-            "https://oto.detik.com/indeks/"
         ]
     },
     "kompas": {},
