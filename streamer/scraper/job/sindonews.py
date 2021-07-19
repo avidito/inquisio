@@ -118,7 +118,7 @@ def scraper(category, url, delay, dt, excluded_url, producer, mode):
     [current_url, page_html] = navigate_page(url, delay, log, query={"t": dt})
 
     while(1):
-        cnt = extract_all_news(producer, log, page_html, excluded_url, delay)
+        cnt = extract_all_news(producer, log, page_html, excluded_url, delay, mode)
         log.add_news_count(cnt)
 
         next_url = get_next_index_page_url(page_html)

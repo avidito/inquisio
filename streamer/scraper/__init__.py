@@ -22,7 +22,7 @@ def run_all_categories(scraper, meta, excluded_urls, mode):
     def wrapper(delay, dt, producer):
         website_report = []
         for category, url in meta:
-            ex_url = excluded_urls.get(category) if (excluded_urls) else {}
+            ex_url = excluded_urls.get(category, []) if (excluded_urls) else []
             report = scraper(category, url, delay, dt, ex_url, producer, mode)
             website_report.append(report)
         return website_report
