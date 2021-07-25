@@ -1,6 +1,9 @@
-*-env/
-result.json
 __pycache__/
+
+*-env/
+__tmp/
+streamer/settings.py
+
+result.json
 test.py
 report.txt
-settings.py
