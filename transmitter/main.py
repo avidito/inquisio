@@ -1,16 +1,5 @@
-from kafka import KafkaConsumer
-
-from utils import logging, get_params, check_tmp_path, export_data
-
-def get_consumer(bootstrap_server):
-    """Get consumer result from subscription"""
-
-    consumer = KafkaConsumer(
-        bootstrap_servers = bootstrap_server,
-        value_deserializer = lambda x: x.decode("utf-8")
-    )
-    return consumer
-
+from sink import get_consumer
+from utils import get_params, logging
 
 if __name__ == "__main__":
     params = get_params()
