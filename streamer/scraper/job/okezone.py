@@ -6,17 +6,16 @@ from . import Logger, reformat_dt, cvt_ts, split_date, check_url
 from . import export_news # For testing purpose
 
 ###### Navigation ######
-def navigate_page(url, delay, log, query=None, path=None, data=None):
+def navigate_page(url, delay, log, query=None, path=None, data=None, method="GET"):
     """Navigate to new page"""
 
-    # Prepare POST data
-    url_fin = url
+    # Prepare GET/POST data
     if (query):
         [year, month, day] = split_date(query["date"])
-        query = {"thn": year, "bln": month, "tgl": day}
+        query = { "tgl": day,  "bln": month, "thn": year, "button": "GO"}
 
     # Get page html
-    req = requests.get(url_fin, params=query)
+    req = requests.get(url, params=query) if (method == "GET") else requests.post(url, data=query)
     log.log_navigation(req.url, req.status_code, delay)
     time.sleep(delay)
     return req.url, BeautifulSoup(req.content, "lxml")
@@ -116,12 +115,12 @@ def ops_clear_nonnews(content_blocks):
     return " ".join(content_clr)
 
 ###### Main ######
-def scraper(category, url, delay, dt, excluded_url, producer, mode):
+def scraper(category, url, delay, dt, excluded_url, producer, mode, method):
     log = Logger("okezone", category, delay=delay, url=url)
 
     # Go to initial point
     log.log_start()
-    [current_url, page_html] = navigate_page(url, delay, log, query={"date": dt})
+    [current_url, page_html] = navigate_page(url, delay, log, query={"date": dt}, method=method)
 
     while(1):
         cnt = extract_all_news(producer, log, page_html, excluded_url, delay, mode)

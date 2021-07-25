@@ -21,9 +21,9 @@ def end_log(end_dt):
 def run_all_categories(scraper, meta, excluded_urls, mode):
     def wrapper(delay, dt, producer):
         website_report = []
-        for category, url in meta:
+        for category, url, *method in meta:
             ex_url = excluded_urls.get(category, []) if (excluded_urls) else []
-            report = scraper(category, url, delay, dt, ex_url, producer, mode)
+            report = scraper(category, url, delay, dt, ex_url, producer, mode, method[0]) if (method) else scraper(category, url, delay, dt, ex_url, producer, mode) 
             website_report.append(report)
         return website_report
     return wrapper

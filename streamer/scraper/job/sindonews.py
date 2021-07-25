@@ -78,7 +78,7 @@ def extract_paginate_content(page, delay, log):
         page_article = page.find("div", {"class": "article"})
     content = ops_clear_nonnews(page_article)
 
-    return " ".join(content)
+    return content
 
 ###### Get Element ######
 def get_next_index_page_url(page):
