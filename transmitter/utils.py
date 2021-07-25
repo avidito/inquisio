@@ -6,10 +6,12 @@ from settings import *
 def get_params():
     """Get parameters value from configuration file"""
 
-    param_names = ["TOPIC", "BOOTSTRAP_SERVER", "TMP_PATH"]
+    sink_params = ["SINK_TOPIC", "SINK_BOOTSTRAP_SERVER"]
+    transmitter_params = ["TRANSMITTER_TOPIC", "TRANSMITTER_BOOTSTRAP_SERVER"]
 
-    params = {param: globals().get(param) for param in param_names}
-    return params
+    sink = {param: globals().get(param) for param in sink_params}
+    transmitter = {param: globals().get(param) for param in transmitter_params}
+    return sink, transmitter
 
 def logging(message):
     """Print message with time namespace"""
