@@ -7,7 +7,7 @@ def get_consumer(bootstrap_server):
 
     consumer = KafkaConsumer(
         bootstrap_servers = bootstrap_server,
-        value_deserializer = lambda x: x.decode("utf-8")
+        value_deserializer = lambda x: x.decode("utf-8", "ignore")
     )
     return consumer
 
