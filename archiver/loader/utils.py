@@ -1,3 +1,6 @@
+from datetime import datetime, timedelta
+import os
+
 from settings import *
 
 def logging(message):
@@ -14,8 +17,18 @@ def get_params():
     params = {param: globals().get(param) for param in param_names}
     return params
 
-def get_data():
-    ...
+def get_data(path, offset=0):
+    """Get data with offset days from tmp folder"""
 
-def export_data():
+    day_dt = datetime.now() + timedelta(days=offset)
+    try:
+        today_path = os.path.join(path, f"{day_dt.strftime('%Y%m%d')}_result.json")
+        with open(today_path, "r", encoding="utf-8") as file:
+            data = [row for row in file]
+    except FileNotFoundError:
+        data = []
+
+    return data
+
+def export_report():
     ...
