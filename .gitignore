@@ -2,8 +2,11 @@ __pycache__/
 
 *-env/
 __tmp/
+__dmp/
 streamer/settings.py
 
 result.json
 test.py
 report.txt
+
+*.csv
