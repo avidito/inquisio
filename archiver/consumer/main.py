@@ -1,6 +1,6 @@
 from kafka import KafkaConsumer
 
-from utils import logging, get_params, check_tmp_path, export_data
+from utils import logging, get_params, export_data
 
 def get_consumer(bootstrap_server):
     """Get consumer result from subscription"""
@@ -11,7 +11,7 @@ def get_consumer(bootstrap_server):
     )
     return consumer
 
-
+########## MAIN ##########
 if __name__ == "__main__":
     params = get_params()
     topic = params["TOPIC"]

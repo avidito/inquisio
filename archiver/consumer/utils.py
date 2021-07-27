@@ -3,6 +3,12 @@ import os
 
 from settings import *
 
+def logging(message):
+    """Print message with time namespace"""
+
+    nmspc = datetime.now().strftime("[%Y-%m-%d %H:%M:%d]")
+    print(f"{nmspc} {message}")
+    
 def get_params():
     """Get parameters value from configuration file"""
 
@@ -10,12 +16,6 @@ def get_params():
 
     params = {param: globals().get(param) for param in param_names}
     return params
-
-def logging(message):
-    """Print message with time namespace"""
-
-    nmspc = datetime.now().strftime("[%Y-%m-%d %H:%M:%d]")
-    print(f"{nmspc} {message}")
 
 def check_tmp_path(path):
     """Check tmp folder existence and create if the folder is not exist"""
