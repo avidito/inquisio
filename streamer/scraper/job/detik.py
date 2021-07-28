@@ -26,12 +26,15 @@ def extract_all_news(producer, log, page, excluded_url, delay, mode):
     news_list = page.find_all("article", attrs={"class": "list-content__item"})
     cnt = 0
     for news in news_list:
-        news_data = extract_news(news, delay, excluded_url, log)
-        if (news_data):
-            producer.publish_data(news_data)
-            if (mode == "debug"):
-                export_news(news_data)
-            cnt += 1
+        try:
+            news_data = extract_news(news, delay, excluded_url, log)
+            if (news_data):
+                producer.publish_data(news_data)
+                if (mode == "debug"):
+                    export_news(news_data)
+                cnt += 1
+        except Exception as e:
+            log.log_error(f"Failed to extract news >> {str(e)}")
     return cnt
 
 def extract_news(news, delay, excluded_url, log):
@@ -39,6 +42,7 @@ def extract_news(news, delay, excluded_url, log):
 
     # Begin Extraction
     title = news.find("h3", attrs={"class": "media__title"}).text
+    website = "detik"
     url = news.find("a", attrs={"class": "media__link"}).get("href")
     post_dt = news.find("div", attrs={"class": "media__date"}).span.get("d-time")
 
@@ -47,7 +51,7 @@ def extract_news(news, delay, excluded_url, log):
     if (info is None):
         return None
 
-    news_data = {"title": title, "category": info["category"], "author": info["author"], "post_dt": post_dt, "tags": info["tags"], "content": info["content"], "url": url}
+    news_data = {"title": title, "website": website, "category": info["category"], "author": info["author"], "post_dt": post_dt, "tags": info["tags"], "content": info["content"], "url": url}
     return news_data
 
 def extract_news_content(url, excluded_url, delay, log):
@@ -89,7 +93,7 @@ def get_next_index_page_url(page):
     """Get next page url from next button"""
 
     next_button = page.find("a", string="Next")
-    next_url = next_button.get("href")
+    next_url = next_button.get("href") if (next_button) else None
     return next_url
 
 ###### Main ######

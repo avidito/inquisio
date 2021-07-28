@@ -11,7 +11,7 @@ def get_producer(params):
 
     _producer = KafkaProducer(
         bootstrap_servers = [bootstrap_server],
-        value_serializer = lambda x : bytes(json.dumps(x), encoding="utf-8")
+        value_serializer = lambda x : bytes(json.dumps(x), encoding="utf-8", errors="ignore")
     )
     return Producer(_producer, topic)
 
