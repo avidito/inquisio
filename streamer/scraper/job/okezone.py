@@ -27,12 +27,15 @@ def extract_all_news(producer, log, page, excluded_url, delay, mode):
     news_list = page.find("div", attrs={"class": "news-content"}).find_all("li")
     cnt = 0
     for news in news_list:
-        news_data = extract_news(news, delay, excluded_url, log)
-        if (news_data):
-            producer.publish_data(news_data)
-            if (mode == "debug"):
-                export_news(news_data) # For testing purpose
-            cnt += 1
+        try:
+            news_data = extract_news(news, delay, excluded_url, log)
+            if (news_data):
+                producer.publish_data(news_data)
+                if (mode == "debug"):
+                    export_news(news_data) # For testing purpose
+                cnt += 1
+        except Exception as e:
+            log.log_error(f"Failed to extract news >> {str(e)}")
     return cnt
 
 def extract_news(news, delay, excluded_url, log):
@@ -40,7 +43,12 @@ def extract_news(news, delay, excluded_url, log):
 
     # Begin Extraction
     title = news.find("h4", attrs={"class": "f17"}).text
-    category = news.find("span", attrs={"class": "c-news"}).a.text
+    website = "okezone"
+
+    # Category
+    category_block = news.find("span", attrs={"class": "c-news"})
+    category = category_block.a.text if (category_block) else news.find("span", attrs={"class": "c-techno"}).a.text
+
     url = news.find("h4", attrs={"class": "f17"}).a.get("href")
     post_dt = cvt_ts(str(news.find("time", attrs={"class": "category-hardnews"}).span.next_sibling.string))
 
@@ -49,7 +57,7 @@ def extract_news(news, delay, excluded_url, log):
     if (info is None):
         return None
 
-    news_data = {"title": title, "category": category, "author": info["author"], "post_dt": post_dt, "tags": info["tags"], "content": info["content"], "url": url}
+    news_data = {"title": title, "website": website, "category": category, "author": info["author"], "post_dt": post_dt, "tags": info["tags"], "content": info["content"], "url": url}
     return news_data
 
 def extract_news_content(url, excluded_url, delay, log):

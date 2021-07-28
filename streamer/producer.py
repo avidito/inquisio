@@ -11,7 +11,10 @@ def get_producer(params):
     active = params.get("ACTIVE")
 
     if (active):
-        _producer = KafkaProducer(bootstrap_servers=[bootstrap_server])
+        _producer = KafkaProducer(
+            bootstrap_servers = [bootstrap_server],
+            value_serializer = lambda x: json.dumps(x).encode("utf-8", "ignore")
+        )
     else:
         _producer = None
     return Producer(_producer, topic)
@@ -31,10 +34,9 @@ class Producer:
             return None
 
         tries = 1
-        data_byte = bytes(json.dumps(data), encoding="utf-8")
         while(tries <= 5):
             try:
-                self.producer.send(self.topic, value=data_byte)
+                self.producer.send(self.topic, value=data)
                 self.producer.flush()
                 break
 

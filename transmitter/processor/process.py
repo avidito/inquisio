@@ -18,7 +18,7 @@ def cvt_lowercase(data):
 def clr_exc_whitespace(data):
     """Remove execessive whitespace"""
 
-    clr = lambda value: re.sub(r"[ ]{2,}", " ", value.strip())
+    clr = lambda value: re.sub(r"([ ]{2,}|[\n\r])", " ", value.strip())
     result = {
         "title": clr(data["title"]),
         "category": clr(data["category"]),

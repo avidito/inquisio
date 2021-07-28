@@ -22,12 +22,15 @@ def extract_all_news(producer, log, page, excluded_url, delay, mode):
     news_list = page.find_all("div", attrs={"class": "article__list"})
     cnt = 0
     for news in news_list:
-        news_data = extract_news(news, delay, excluded_url, log)
-        if (news_data):
-            producer.publish_data(news_data)
-            if (mode == "debug"):
-                export_news(news_data) # For testing purpose
-            cnt += 1
+        try:
+            news_data = extract_news(news, delay, excluded_url, log)
+            if (news_data):
+                producer.publish_data(news_data)
+                if (mode == "debug"):
+                    export_news(news_data) # For testing purpose
+                cnt += 1
+        except Exception as e:
+            log.log_error(f"Failed to extract news >> {str(e)}")
     return cnt
 
 def extract_news(news, delay, excluded_url, log):
@@ -35,6 +38,7 @@ def extract_news(news, delay, excluded_url, log):
 
     # Begin Extraction
     title = news.find("h3", attrs={"class": "article__title"}).text
+    website = "kompas"
     category = news.find("div", attrs={"class": "article__subtitle"}).text
     url = news.find("a", attrs={"class": "article__link"}).get("href")
     post_dt = cvt_ts(news.find("div", attrs={"class": "article__date"}).text)
@@ -44,7 +48,7 @@ def extract_news(news, delay, excluded_url, log):
     if (info is None):
         return None
 
-    news_data = {"title": title, "category": category, "author": info["author"], "post_dt": post_dt, "tags": info["tags"], "content": info["content"], "url": url}
+    news_data = {"title": title, "website": website, "category": category, "author": info["author"], "post_dt": post_dt, "tags": info["tags"], "content": info["content"], "url": url}
     return news_data
 
 def extract_news_content(url, excluded_url, delay, log):
@@ -74,7 +78,7 @@ def extract_news_content(url, excluded_url, delay, log):
 def extract_paginate_content(page, delay, log):
     """Extract news content"""
 
-    page_article = [p.text for p in page.find("div", attrs={"class": "read__content"}).find_all("p", recursive=False)]
+    page_article = [p.text for p in page.find("div", attrs={"class": "read__content"}).find_all(["p", "ul", "ol"], recursive=False)]
     content = ops_clear_nonnews(page_article)
 
     return content

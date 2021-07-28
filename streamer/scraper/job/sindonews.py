@@ -22,12 +22,15 @@ def extract_all_news(producer, log, page, excluded_url, delay, mode):
     news_list = page.find("div", attrs={"class": "indeks-news"}).find_all("div", attrs={"class": "indeks-rows"})
     cnt = 0
     for news in news_list:
-        news_data = extract_news(news, delay, excluded_url, log)
-        if (news_data):
-            producer.publish_data(news_data)
-            if (mode == "debug"):
-                export_news(news_data)
-            cnt += 1
+        try:
+            news_data = extract_news(news, delay, excluded_url, log)
+            if (news_data):
+                producer.publish_data(news_data)
+                if (mode == "debug"):
+                    export_news(news_data)
+                cnt += 1
+        except Exception as e:
+            log.log_error(f"Failed to extract news >> {str(e)}")
     return cnt
 
 def extract_news(news, delay, excluded_url, log):
@@ -35,6 +38,7 @@ def extract_news(news, delay, excluded_url, log):
 
     # Begin Extraction
     title = news.find("div", attrs={"class": "indeks-title"}).text
+    website = "sindonews"
     category = news.find("div", attrs={"class": "mini-info"}).find("li").text
     url = news.find("div", attrs={"class": "indeks-title"}).a["href"]
     post_dt = cvt_ts(news.find("div", attrs={"class": "mini-info"}).find("p").text)
@@ -44,7 +48,7 @@ def extract_news(news, delay, excluded_url, log):
     if (info is None):
         return None
 
-    news_data = {"title": title, "category": category, "author": info["author"], "post_dt": post_dt, "tags": info["tags"], "content": info["content"], "url": url}
+    news_data = {"title": title, "website": website, "category": category, "author": info["author"], "post_dt": post_dt, "tags": info["tags"], "content": info["content"], "url": url}
     return news_data
 
 def extract_news_content(url, excluded_url, delay, log):
@@ -59,12 +63,8 @@ def extract_news_content(url, excluded_url, delay, log):
     author = author_block.text if (author_block) else news_html.find("div", attrs={"class": "author"}).text
 
     # Tags
-    tags_list_block = news_html.find("div", attrs={"class": "tag-list"})
-    if (tags_list_block):
-        tags_list = tags_list_block
-    else:
-        tags_list = news_html.find("div", attrs={"class": "category-relative"})
-    tags = [tag.text for tag in tags_list.find_all("li")]
+    tags_block = news_html.find("div", attrs={"class": ["tag-list", "list-topik-artikel", "category-relative"]})
+    tags = [tag.text for tag in tags_block.find_all("li")]
 
     content = extract_paginate_content(news_html, delay, log)
 
@@ -76,6 +76,8 @@ def extract_paginate_content(page, delay, log):
     page_article = page.find("div", {"id": "content"})
     if (page_article is None):
         page_article = page.find("div", {"class": "article"})
+    if (page_article is None):
+        page_article = page.find("article", {"class": "detail-artikel"})
     content = ops_clear_nonnews(page_article)
 
     return content

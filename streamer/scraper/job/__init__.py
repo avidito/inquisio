@@ -45,6 +45,10 @@ class Logger:
         seconds = self.duration % 60
         print(f"{dt_nspc} Finishing web-scraping process for `{self.website}` - `{self.category}`. Total execution time: {minutes} minute(s), {seconds} second(s). Total extracted info: {self.cnt}")
 
+    def log_error(self, msg):
+        dt_now, dt_nspc = self.get_datetime_namespace()
+        print(f"{dt_nspc} Error occured: {msg}")
+
     def export_report(self):
         """Exporting scraping job log for report"""
 
