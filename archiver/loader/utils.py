@@ -13,7 +13,7 @@ def logging(message):
 def get_params():
     """Get parameters value from configuration file"""
 
-    param_names = ["TMP_PATH", "DMP_PATH", "TABLE_LIST"]
+    param_names = ["TMP_PATH", "DMP_PATH", "TABLE_LIST", "USERNAME", "PASSWORD", "HOSTNAME", "PORT", "DATABASE"]
 
     params = {param: globals().get(param) for param in param_names}
     return params
@@ -23,7 +23,7 @@ def get_data(path, offset=0):
 
     day_dt = datetime.now() + timedelta(days=offset)
     try:
-        day_path = os.path.join(path, f"{day_dt.strftime('%Y%m%d')}_result.json")
+        day_path = os.path.join(path, f"{day_dt.strftime('%Y%m%d')}_results.json")
         with open(day_path, "r", encoding="utf-8") as file:
             data = [json.loads(row) for row in file]
     except FileNotFoundError:
@@ -38,6 +38,3 @@ def check_dir_path(path):
         return True
 
     os.mkdir(path)
-
-def export_report():
-    ...

@@ -60,7 +60,7 @@ def cvt_lowercase(data):
 def cvt_ts_to_datetime(data):
     """Convert timestamps to datetime string format"""
 
-    cvt_ttd = vectorize(lambda value: datetime.fromtimestamp(value).strftime("%Y-%m-%d %H:%M:%S"))
+    cvt_ttd = vectorize(lambda value: datetime.fromtimestamp(int(value)).strftime("%Y-%m-%d %H:%M:%S"))
     result = {
         "title": data["title"],
         "category": data["category"],

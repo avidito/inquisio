@@ -33,7 +33,7 @@ class Contents(Base):
 	__table_args__ = {"schema": "src"}
 
 	partition_id = Column(Integer, primary_key=True)
-	news_id = Column(Integer)
+	news_id = Column(Integer, primary_key=True)
 	length = Column(Integer)
 	partition = Column(Text)
 	load_dt = Column(DateTime)
