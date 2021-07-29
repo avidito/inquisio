@@ -58,7 +58,7 @@ def export_dataset(dataset, path):
     check_dir_path(path)
     for label, data in dataset.items():
         exp_path = os.path.join(path, f"prc_{label}.csv")
-        with open(exp_path, "w+", newline='') as file:
+        with open(exp_path, "w+", newline="", encoding="utf-8") as file:
             writer = csv.writer(file)
             for row in data:
                 writer.writerow(row)

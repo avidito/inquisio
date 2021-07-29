@@ -37,7 +37,7 @@ def log_db_process(func):
 def get_params():
     """Get parameters value from configuration file"""
 
-    param_names = ["TMP_PATH", "DMP_PATH", "TABLE_LIST", "USERNAME", "PASSWORD", "HOSTNAME", "PORT", "DATABASE"]
+    param_names = ["TMP_PATH", "DMP_PATH", "TABLE_LIST", "MAP_CATEGORIES", "USERNAME", "PASSWORD", "HOSTNAME", "PORT", "DATABASE"]
 
     params = {param: globals().get(param) for param in param_names}
     return params

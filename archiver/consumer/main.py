@@ -18,7 +18,7 @@ if __name__ == "__main__":
     bootstrap_server = params["BOOTSTRAP_SERVER"]
     path = params["DMP_PATH"]
 
-    logging(f"Start consumer with: {params}")
+    logging(f"Start consumer with topic `{topic}`")
     consumer = get_consumer(bootstrap_server)
     while(1):
         try:

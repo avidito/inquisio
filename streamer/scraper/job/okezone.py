@@ -43,7 +43,8 @@ def extract_news(news, delay, excluded_url, log):
 
     # Begin Extraction
     title = news.find("h4", attrs={"class": "f17"}).text
-    website = "okezone"
+    website = log.website
+    channel = log.category
 
     # Category
     category_block = news.find("span", attrs={"class": "c-news"})
@@ -57,7 +58,7 @@ def extract_news(news, delay, excluded_url, log):
     if (info is None):
         return None
 
-    news_data = {"title": title, "website": website, "category": category, "author": info["author"], "post_dt": post_dt, "tags": info["tags"], "content": info["content"], "url": url}
+    news_data = {"title": title, "website": website, "channel": channel, "category": category, "author": info["author"], "post_dt": post_dt, "tags": info["tags"], "content": info["content"], "url": url}
     return news_data
 
 def extract_news_content(url, excluded_url, delay, log):

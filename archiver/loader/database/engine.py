@@ -6,7 +6,7 @@ from contextlib import contextmanager
 
 def session_factory(username, password, hostname, port, database):
 	"""Database session factory to generate engine context"""
-	
+
 	engine = create_engine(f"postgresql://{username}:{password}@{hostname}:{port}/{database}")
 	Session = sessionmaker(autoflush=False, autocommit=False, bind=engine)
 

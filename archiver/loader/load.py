@@ -22,7 +22,7 @@ def read_data(table_name, tmp):
     """Read data from csv file"""
 
     path = f"{tmp}/prc_{table_name}.csv"
-    with open(path, "r") as file:
+    with open(path, "r", encoding="utf-8") as file:
         reader = csv.reader(file, delimiter=",")
         header, *data = reader
     return header, data

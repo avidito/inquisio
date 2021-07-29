@@ -4,7 +4,7 @@ import itertools
 
 from .utils import vectorize, log_process
 
-def processor(data):
+def processor(data, map_ctg):
     """Processor main function"""
 
     news_0 = data.copy()
@@ -14,7 +14,7 @@ def processor(data):
     news_4 = add_news_tmp_id(news_3)
     contents_0 = crt_contents_dataset(news_4)
     tags_0 = crt_tags_dataset(news_4)
-    categories_0 = crt_categories_dataset(news_4)
+    categories_0 = crt_categories_dataset(news_4, map_ctg)
     map_news_tags_0 = crt_map_news_tags(news_4, tags_0)
     news_5 = upt_news_cols_and_fk(news_4, categories_0)
 
@@ -47,12 +47,13 @@ def cvt_lowercase(data):
     cvt_lc = vectorize(str.lower)
     result = {
         "title": cvt_lc(data["title"]),
+        "website": cvt_lc(data["website"]),
         "category": cvt_lc(data["category"]),
         "author": cvt_lc(data["author"]),
         "post_dt": data["post_dt"],
         "tags": cvt_lc(data["tags"]),
         "content": cvt_lc(data["content"]),
-        "url": data["url"]
+        "url": data["url"],
     }
     return result
 
@@ -63,6 +64,7 @@ def cvt_ts_to_datetime(data):
     cvt_ttd = vectorize(lambda value: datetime.fromtimestamp(int(value)).strftime("%Y-%m-%d %H:%M:%S"))
     result = {
         "title": data["title"],
+        "website": data["website"],
         "category": data["category"],
         "author": data["author"],
         "post_dt": cvt_ttd(data["post_dt"]),
@@ -80,6 +82,7 @@ def clr_exc_whitespace(data):
     clr_ews = vectorize(lambda value: re.sub(r"([ ]{2,}|[\n\r])", " ", value.strip()))
     result = {
         "title": clr_ews(data["title"]),
+        "website": clr_ews(data["website"]),
         "category": clr_ews(data["category"]),
         "author": clr_ews(data["author"]),
         "post_dt": data["post_dt"],
@@ -132,16 +135,31 @@ def crt_tags_dataset(data):
     return result
 
 @log_process
-def crt_categories_dataset(data):
+def crt_categories_dataset(data, mapper):
     """Create categories dataset from news data"""
 
-    categories = set(itertools.chain(data["category"]))
-    cnt = len(categories)
+    # Extract website - category unique pair
+    category_set = set()
+    for i in data["news_id"]:
+        category = data["category"][i]
+        source = data["website"][i]
+        category_set.add((source, category))
+    [sources, categories] = list(zip(*category_set))
+
+    # Reverse category mapper
+    rev_mapper = {
+        v: key \
+        for key, value in mapper.items() \
+        for v in value
+    }
+    print(rev_mapper)
+
+    cnt = len(category_set)
     result = {
         "category_id": list(range(cnt)),
-        "src_category": list(categories),
-        "gen_category": "",
-        "source": ""
+        "src_category": categories,
+        "gen_category": [rev_mapper.get(ctg, "") for ctg in categories],
+        "source": sources
     }
     return result
 
@@ -174,11 +192,11 @@ def upt_news_cols_and_fk(data_news, data_categories):
 
     result = {
         "news_id": data_news["news_id"],
+        "website": data_news["website"],
         "category_id": category_id,
         "content_id": data_news["news_id"],
         "title": data_news["title"],
         "author": data_news["author"],
-        "post_dt": data_news["post_dt"],
-        "website": ""
+        "post_dt": data_news["post_dt"]
     }
     return result

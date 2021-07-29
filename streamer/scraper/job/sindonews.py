@@ -38,7 +38,8 @@ def extract_news(news, delay, excluded_url, log):
 
     # Begin Extraction
     title = news.find("div", attrs={"class": "indeks-title"}).text
-    website = "sindonews"
+    website = log.website
+    channel = log.category
     category = news.find("div", attrs={"class": "mini-info"}).find("li").text
     url = news.find("div", attrs={"class": "indeks-title"}).a["href"]
     post_dt = cvt_ts(news.find("div", attrs={"class": "mini-info"}).find("p").text)
@@ -48,7 +49,7 @@ def extract_news(news, delay, excluded_url, log):
     if (info is None):
         return None
 
-    news_data = {"title": title, "website": website, "category": category, "author": info["author"], "post_dt": post_dt, "tags": info["tags"], "content": info["content"], "url": url}
+    news_data = {"title": title, "website": website, "channel": channel, "category": category, "author": info["author"], "post_dt": post_dt, "tags": info["tags"], "content": info["content"], "url": url}
     return news_data
 
 def extract_news_content(url, excluded_url, delay, log):

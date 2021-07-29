@@ -42,7 +42,8 @@ def extract_news(news, delay, excluded_url, log):
 
     # Begin Extraction
     title = news.find("h3", attrs={"class": "media__title"}).text
-    website = "detik"
+    website = log.website
+    channel = log.category
     url = news.find("a", attrs={"class": "media__link"}).get("href")
     post_dt = news.find("div", attrs={"class": "media__date"}).span.get("d-time")
 
@@ -51,7 +52,7 @@ def extract_news(news, delay, excluded_url, log):
     if (info is None):
         return None
 
-    news_data = {"title": title, "website": website, "category": info["category"], "author": info["author"], "post_dt": post_dt, "tags": info["tags"], "content": info["content"], "url": url}
+    news_data = {"title": title, "website": website, "channel": channel, "category": info["category"], "author": info["author"], "post_dt": post_dt, "tags": info["tags"], "content": info["content"], "url": url}
     return news_data
 
 def extract_news_content(url, excluded_url, delay, log):

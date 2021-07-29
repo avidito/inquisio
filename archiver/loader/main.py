@@ -9,6 +9,7 @@ if __name__ == "__main__":
     dmp_path = params["DMP_PATH"]
     tmp_path = params["TMP_PATH"]
     table_list = params["TABLE_LIST"]
+    map_categories = params["MAP_CATEGORIES"]
     username = params["USERNAME"]
     password = params["PASSWORD"]
     hostname = params["HOSTNAME"]
@@ -21,7 +22,7 @@ if __name__ == "__main__":
 
     if (today_data or yesterday_data):
         logging(f"Processing SRC data")
-        process_data([*today_data, *yesterday_data], tmp_path)
+        process_data([*today_data, *yesterday_data], tmp_path, map_categories)
 
         logging(f"Start loading SRC data")
         load_data_to_db(tmp_path, table_list, username, password, hostname, port, database)

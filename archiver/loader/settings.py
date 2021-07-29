@@ -10,6 +10,18 @@ TABLE_LIST = {
     "tags": ["tag_id"],
     "map_news_tags": ["news_id", "tag_id"]
 }
+MAP_CATEGORIES = {
+    "news": ["news", "berita"],
+    "finance": ["finance", "money", "economy"],
+    "hype": ["hype"],
+    "sport": ["sport", "bola", "sports"],
+    "automotive": ["otomotif"],
+    "travel": ["travel"],
+    "trend": ["tren"],
+    "tech": ["inet", "tekno", "techno", "autotechno"],
+    "science": ["sains"],
+    "education": ["edukasi"]
+}
 USERNAME = "inq_admin"
 PASSWORD = "admin"
 HOSTNAME = "localhost"
