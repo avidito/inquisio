@@ -1,24 +1,6 @@
-from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
 from sqlalchemy import Column, String, Integer, DateTime
 
-from application.utils import get_params
-
-params = get_params()
-username = params["USERNAME"]
-password = params["PASSWORD"]
-hostname = params["HOSTNAME"]
-port = params["PORT"]
-database = params["DATABASE"]
-
-########## Engine ##########
-def get_db():
-    db_engine = create_engine(f"postgresql://{username}:{password}@{hostname}:{port}/{database}")
-    Session = sessionmaker(autocommit=False, autoflush=False, bind=db_engine)
-    return Session()
-
-########## Models ##########
 Base = declarative_base()
 
 class News(Base):
