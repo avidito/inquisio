@@ -1,6 +1,6 @@
 hostname=localhost
 database=inquisio
-schema_cdc=cdc
-schema_arc=archive
+schema_src=src
+schema_dw=dw
 admin_user=inq_admin
-admin_pass=inquisio
+admin_pass=admin

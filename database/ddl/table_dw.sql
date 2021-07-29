@@ -10,10 +10,10 @@ CREATE TABLE dw.news_cnt(
   load_dt TIMESTAMP
 );
 
--- Top Tags
-DROP TABLE IF EXISTS dw.top_tags;
+-- Tag Count
+DROP TABLE IF EXISTS dw.tags_cnt;
 
-CREATE TABLE dw.top_tags(
+CREATE TABLE dw.tags_cnt(
   website VARCHAR,
   tags VARCHAR,
   day DATE,
