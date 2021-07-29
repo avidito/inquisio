@@ -139,7 +139,9 @@ def crt_categories_dataset(data):
     cnt = len(categories)
     result = {
         "category_id": list(range(cnt)),
-        "src_category": list(categories)
+        "src_category": list(categories),
+        "gen_category": "",
+        "source": ""
     }
     return result
 
@@ -176,6 +178,7 @@ def upt_news_cols_and_fk(data_news, data_categories):
         "content_id": data_news["news_id"],
         "title": data_news["title"],
         "author": data_news["author"],
-        "post_dt": data_news["post_dt"]
+        "post_dt": data_news["post_dt"],
+        "website": ""
     }
     return result
