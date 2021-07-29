@@ -1,6 +1,7 @@
 ##### DIRECTORY #####
 DMP_PATH = "D:/Project/Inquisio/archiver/__dmp"
 TMP_PATH = "D:/Project/Inquisio/archiver/__tmp"
+SQL_PATH = "D:/Project/Inquisio/archiver/loader/transformer/sql"
 
 ##### DATABASE #####
 TABLE_LIST = {

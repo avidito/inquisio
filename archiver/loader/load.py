@@ -6,15 +6,15 @@ from database.models import TABLE_MODELS
 from utils import remove_duplicate, log_db_process
 
 ##### MAIN #####
-def load_data_to_db(tmp, table_list, username, password, hostname, port, database):
+def load_data_to_db(tmp, table_list, db_session):
     """Loading processed data to table"""
 
-    get_db = session_factory(username, password, hostname, port, database)
     for table_name, pk in table_list.items():
         header, data = read_data(table_name, tmp=tmp)
         data = remove_duplicate(data, header, pk)
-        truncate_table(table_name, db_session=get_db)
-        load_data(table_name, db_session=get_db, header=header, data=data)
+
+        truncate_table(table_name, db_session=db_session)
+        load_data(table_name, db_session=db_session, header=header, data=data)
 
 ##### CRUD #####
 @log_db_process

@@ -6,7 +6,7 @@ INSERT INTO dw.tags_cnt
 SELECT
   N.website AS website,
   T.tag AS tag,
-  TO_CHAR(N.post_dt, 'YYYY-MM-DD') AS day,
+  N.post_dt::DATE AS day,
   COUNT(*) AS cnt,
   CURRENT_TIMESTAMP AS load_dt
 FROM src.tags T

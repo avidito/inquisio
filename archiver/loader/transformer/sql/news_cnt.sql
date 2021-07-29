@@ -7,7 +7,7 @@ SELECT
   N.website AS website,
   C.gen_category AS category,
   C.src_category AS src_category,
-  TO_CHAR(N.post_dt, 'YYYY-MM-DD') AS day,
+  N.post_dt::DATE AS day,
   COUNT(*) AS cnt,
   CURRENT_TIMESTAMP AS load_dt
 FROM src.categories C

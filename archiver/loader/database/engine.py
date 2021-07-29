@@ -3,7 +3,6 @@ from sqlalchemy.orm import sessionmaker
 
 from contextlib import contextmanager
 
-
 def session_factory(username, password, hostname, port, database):
 	"""Database session factory to generate engine context"""
 
