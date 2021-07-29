@@ -29,7 +29,7 @@ def export_data(data, path):
     """Exporting data to tmp folder based on received date"""
 
     check_dir_path(path)
-    today_dt = datetime.now().strftime("%Y%d%m")
+    today_dt = datetime.now().strftime("%Y%m%d")
     data_path = os.path.join(path, f"{today_dt}_results.json")
     with open(data_path, "a+", encoding="UTF-8") as file:
         file.write(f"{data.value}\n")

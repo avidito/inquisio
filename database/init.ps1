@@ -37,14 +37,18 @@ psql -h $hostname -U $user -c "CREATE DATABASE $($database);" -q
 psql -h $hostname -U $user -c "GRANT ALL PRIVILEGES ON DATABASE $($database) TO $($admin_user);" -q
 Write-Host "[$(Get-Date -UFormat '%Y-%m-%d %H:%M:%S')] Succesfully create '$database' database"
 
-# Create CDC schema
+# Create SrC schema
 $env:PGPASSWORD = $admin_pass
-psql -h $hostname -d $database -U $admin_user -c "CREATE SCHEMA $($schema_cdc);" -q
-Write-Host "[$(Get-Date -UFormat '%Y-%m-%d %H:%M:%S')] Succesfully create '$schema_cdc' schema as CDC schema"
+psql -h $hostname -d $database -U $admin_user -c "CREATE SCHEMA $($schema_src);" -q
+Write-Host "[$(Get-Date -UFormat '%Y-%m-%d %H:%M:%S')] Succesfully create '$schema_src' schema as CDC schema"
 
 # Create Archive schema
-psql -h $hostname -d $database -U $admin_user -c "CREATE SCHEMA $($schema_arc);" -q
-Write-Host "[$(Get-Date -UFormat '%Y-%m-%d %H:%M:%S')] Succesfully create '$schema_arc' schema as Archive schema"
+psql -h $hostname -d $database -U $admin_user -c "CREATE SCHEMA $($schema_dw);" -q
+Write-Host "[$(Get-Date -UFormat '%Y-%m-%d %H:%M:%S')] Succesfully create '$schema_dw' schema as Archive schema"
+
+# Create Table from DDL
+psql -h $hostname -d $database -U $admin_user -f "ddl/table_src.sql" -q
+psql -h $hostname -d $database -U $admin_user -f "ddl/table_dw.sql" -q
 
 # Clear environment variable
 Remove-Item Env:PGPASSWORD

@@ -1,5 +1,5 @@
 ########## SINK CONFIGURATION ##########
-SINK_TOPIC = "python-topic"
+SINK_TOPIC = "scraper-stream"
 SINK_BOOTSTRAP_SERVER = "localhost:9092"
 
 ########## TRANSMITTER CONFIGURATION ##########

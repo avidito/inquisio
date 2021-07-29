@@ -19,7 +19,8 @@ def navigate_page(url, delay, log, query=None, path=None, data=None):
 def extract_all_news(producer, log, page, excluded_url, delay, mode):
     """Extract all news provided in current page"""
 
-    news_list = page.find("div", attrs={"class": "indeks-news"}).find_all("div", attrs={"class": "indeks-rows"})
+    news_list_block = page.find("div", attrs={"class": "indeks-news"})
+    news_list = news_list_block.find_all("div", attrs={"class": "indeks-rows"}) if (news_list_block) else []
     cnt = 0
     for news in news_list:
         try:
@@ -38,7 +39,8 @@ def extract_news(news, delay, excluded_url, log):
 
     # Begin Extraction
     title = news.find("div", attrs={"class": "indeks-title"}).text
-    website = "sindonews"
+    website = log.website
+    channel = log.category
     category = news.find("div", attrs={"class": "mini-info"}).find("li").text
     url = news.find("div", attrs={"class": "indeks-title"}).a["href"]
     post_dt = cvt_ts(news.find("div", attrs={"class": "mini-info"}).find("p").text)
@@ -48,7 +50,7 @@ def extract_news(news, delay, excluded_url, log):
     if (info is None):
         return None
 
-    news_data = {"title": title, "website": website, "category": category, "author": info["author"], "post_dt": post_dt, "tags": info["tags"], "content": info["content"], "url": url}
+    news_data = {"title": title, "website": website, "channel": channel, "category": category, "author": info["author"], "post_dt": post_dt, "tags": info["tags"], "content": info["content"], "url": url}
     return news_data
 
 def extract_news_content(url, excluded_url, delay, log):
@@ -76,6 +78,8 @@ def extract_paginate_content(page, delay, log):
     page_article = page.find("div", {"id": "content"})
     if (page_article is None):
         page_article = page.find("div", {"class": "article"})
+    if (page_article is None):
+        page_article = page.find("div", {"class": "desc-artikel-detail"})
     if (page_article is None):
         page_article = page.find("article", {"class": "detail-artikel"})
     content = ops_clear_nonnews(page_article)
