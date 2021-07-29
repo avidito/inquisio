@@ -12,14 +12,14 @@ TABLE_LIST = {
     "map_news_tags": ["news_id", "tag_id"]
 }
 MAP_CATEGORIES = {
-    "news": ["news", "berita"],
-    "finance": ["finance", "money", "economy"],
+    "news": ["news", "nasional", "metro", "daerah", "internasional"],
+    "finance": ["finance", "money"],
     "hype": ["hype"],
     "sport": ["sport", "bola", "sports"],
-    "automotive": ["otomotif"],
+    "automotive": ["oto"],
     "travel": ["travel"],
     "trend": ["tren"],
-    "tech": ["inet", "tekno", "techno", "autotechno"],
+    "tech": ["inet", "tekno", "techno", "tekno"],
     "science": ["sains"],
     "education": ["edukasi"]
 }

@@ -39,6 +39,25 @@ def add_news_tmp_id(data):
     }
     return result
 
+##### Clear #####
+@log_process
+def clr_exc_whitespace(data):
+    """Remove execessive whitespace"""
+
+    clr_ews = vectorize(lambda value: re.sub(r"([ ]{2,}|[\n\r])", " ", value.strip()))
+    result = {
+        "title": clr_ews(data["title"]),
+        "website": clr_ews(data["website"]),
+        "channel": clr_ews(data["channel"]),
+        "category": clr_ews(data["category"]),
+        "author": clr_ews(data["author"]),
+        "post_dt": data["post_dt"],
+        "tags": clr_ews(data["tags"]),
+        "content": clr_ews(data["content"]),
+        "url": data["url"]
+    }
+    return result
+
 ##### Convert #####
 @log_process
 def cvt_lowercase(data):
@@ -48,6 +67,7 @@ def cvt_lowercase(data):
     result = {
         "title": cvt_lc(data["title"]),
         "website": cvt_lc(data["website"]),
+        "channel": cvt_lc(data["channel"]),
         "category": cvt_lc(data["category"]),
         "author": cvt_lc(data["author"]),
         "post_dt": data["post_dt"],
@@ -65,6 +85,7 @@ def cvt_ts_to_datetime(data):
     result = {
         "title": data["title"],
         "website": data["website"],
+        "channel": data["channel"],
         "category": data["category"],
         "author": data["author"],
         "post_dt": cvt_ttd(data["post_dt"]),
@@ -74,25 +95,37 @@ def cvt_ts_to_datetime(data):
     }
     return result
 
-##### Clear #####
+##### Create #####
 @log_process
-def clr_exc_whitespace(data):
-    """Remove execessive whitespace"""
+def crt_categories_dataset(data, mapper):
+    """Create categories dataset from news data"""
 
-    clr_ews = vectorize(lambda value: re.sub(r"([ ]{2,}|[\n\r])", " ", value.strip()))
+    # Extract category - website - channel unique combination
+    category_set = set()
+    for i in data["news_id"]:
+        source = data["website"][i]
+        channel = data["channel"][i]
+        category = data["category"][i]
+        category_set.add((source, channel, category))
+    [sources, channels, categories] = list(zip(*category_set))
+
+    # Reverse category mapper
+    rev_mapper = {
+        v: key \
+        for key, value in mapper.items() \
+        for v in value
+    }
+
+    cnt = len(category_set)
     result = {
-        "title": clr_ews(data["title"]),
-        "website": clr_ews(data["website"]),
-        "category": clr_ews(data["category"]),
-        "author": clr_ews(data["author"]),
-        "post_dt": data["post_dt"],
-        "tags": clr_ews(data["tags"]),
-        "content": clr_ews(data["content"]),
-        "url": data["url"]
+        "category_id": list(range(cnt)),
+        "category": [rev_mapper.get(ch, "") for ch in channels],
+        "src_category": categories,
+        "source": sources,
+        "channel": channels
     }
     return result
 
-##### Create #####
 @log_process
 def crt_contents_dataset(data):
     """Create contents dataset from news data"""
@@ -123,47 +156,6 @@ def crt_contents_dataset(data):
     return result
 
 @log_process
-def crt_tags_dataset(data):
-    """Create tags dataset from news data"""
-
-    tags = set(itertools.chain(*data["tags"]))
-    cnt = len(tags)
-    result = {
-        "tag_id": list(range(cnt)),
-        "tag": list(tags)
-    }
-    return result
-
-@log_process
-def crt_categories_dataset(data, mapper):
-    """Create categories dataset from news data"""
-
-    # Extract website - category unique pair
-    category_set = set()
-    for i in data["news_id"]:
-        category = data["category"][i]
-        source = data["website"][i]
-        category_set.add((source, category))
-    [sources, categories] = list(zip(*category_set))
-
-    # Reverse category mapper
-    rev_mapper = {
-        v: key \
-        for key, value in mapper.items() \
-        for v in value
-    }
-    print(rev_mapper)
-
-    cnt = len(category_set)
-    result = {
-        "category_id": list(range(cnt)),
-        "src_category": categories,
-        "gen_category": [rev_mapper.get(ctg, "") for ctg in categories],
-        "source": sources
-    }
-    return result
-
-@log_process
 def crt_map_news_tags(data_news, data_tags):
     """Create map_news_tags dataset from news and tags data"""
 
@@ -182,6 +174,28 @@ def crt_map_news_tags(data_news, data_tags):
     }
     return result
 
+@log_process
+def crt_tags_dataset(data):
+    """Create tags dataset from news data"""
+
+    # Extract website - channel - tag unique combination
+    tag_set = set()
+    for i in data["news_id"]:
+        source = data["website"][i]
+        channel = data["channel"][i]
+        for tag in data["tags"][i]:
+            tag_set.add((source, channel, tag))
+    [sources, channels, tags] = list(zip(*tag_set))
+
+    cnt = len(tags)
+    result = {
+        "tag_id": list(range(cnt)),
+        "tag": tags,
+        "source": sources,
+        "channel": channels
+    }
+    return result
+
 ##### Update #####
 @log_process
 def upt_news_cols_and_fk(data_news, data_categories):
@@ -192,10 +206,11 @@ def upt_news_cols_and_fk(data_news, data_categories):
 
     result = {
         "news_id": data_news["news_id"],
-        "website": data_news["website"],
         "category_id": category_id,
         "content_id": data_news["news_id"],
         "title": data_news["title"],
+        "website": data_news["website"],
+        "url": data_news["url"],
         "author": data_news["author"],
         "post_dt": data_news["post_dt"]
     }

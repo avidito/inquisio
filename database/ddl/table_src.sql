@@ -18,9 +18,10 @@ DROP TABLE IF EXISTS src.categories;
 
 CREATE TABLE src.categories(
   category_id INT,
+  category VARCHAR,
   src_category VARCHAR,
-  gen_category VARCHAR,
   source VARCHAR,
+  channel VARCHAR,
   update_dt TIMESTAMP
 );
 
@@ -29,7 +30,7 @@ DROP TABLE IF EXISTS src.contents;
 
 CREATE TABLE src.contents(
   partition_id INT,
-  news_id INT, 
+  news_id INT,
   length INT,
   partition TEXT,
   load_dt TIMESTAMP
@@ -41,6 +42,8 @@ DROP TABLE IF EXISTS src.tags;
 CREATE TABLE src.tags(
   tag_id INT,
   tag VARCHAR,
+  source VARCHAR,
+  channel VARCHAR,
   update_dt TIMESTAMP
 );
 

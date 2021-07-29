@@ -23,9 +23,10 @@ class Categories(Base):
 	__table_args__ = {"schema": "src"}
 
 	category_id = Column(Integer, primary_key=True)
+	category = Column(String)
 	src_category = Column(String)
-	gen_category = Column(String)
 	source = Column(String)
+	channel = Column(String)
 	update_dt = Column(DateTime)
 
 class Contents(Base):
@@ -44,6 +45,8 @@ class Tags(Base):
 
 	tag_id = Column(Integer, primary_key=True)
 	tag = Column(String)
+	source = Column(String)
+	channel = Column(String)
 	update_dt = Column(DateTime)
 
 class MapNewsTags(Base):

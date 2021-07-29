@@ -15,7 +15,7 @@ DROP TABLE IF EXISTS dw.tags_cnt;
 
 CREATE TABLE dw.tags_cnt(
   website VARCHAR,
-  tags VARCHAR,
+  tag VARCHAR,
   day DATE,
   cnt INT,
   load_dt TIMESTAMP

@@ -5,7 +5,7 @@ TRUNCATE dw.news_cnt;
 INSERT INTO dw.news_cnt
 SELECT
   N.website AS website,
-  C.gen_category AS category,
+  C.category AS category,
   C.src_category AS src_category,
   N.post_dt::DATE AS day,
   COUNT(*) AS cnt,
