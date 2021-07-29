@@ -13,7 +13,7 @@ def logging(message):
 def get_params():
     """Get parameters value from configuration file"""
 
-    param_names = ["TMP_PATH", "DMP_PATH"]
+    param_names = ["TMP_PATH", "DMP_PATH", "TABLE_LIST"]
 
     params = {param: globals().get(param) for param in param_names}
     return params
