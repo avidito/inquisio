@@ -2,6 +2,19 @@ from datetime import datetime
 import csv
 import os
 
+##### Log #####
+def log_process(func):
+    """Logging wrapper to add time data"""
+
+    def wrapper(*data):
+        time_namespace = datetime.now().strftime("[%Y-%m-%d %H:%M:%S]")
+        message = f"Running `{func.__name__}` process"
+        print(f"{time_namespace} {message}")
+        result = func(*data)
+        return result
+    return wrapper
+
+##### Data #####
 def reconstruct_column_based(data_list):
     """Reconstruct data to column based"""
 
@@ -32,17 +45,7 @@ def vectorize(func):
         return result
     return vec_func
 
-def log_process(func):
-    """Logging wrapper to add time data"""
-
-    def wrapper(*data):
-        time_namespace = datetime.now().strftime("[%Y-%m-%d %H:%M:%S]")
-        message = f"Running `{func.__name__}` process"
-        print(f"{time_namespace} {message}")
-        result = func(*data)
-        return result
-    return wrapper
-
+##### Directory and Files ####
 def check_dir_path(path):
     """Check dump folder existence and create if the folder is not exist"""
 

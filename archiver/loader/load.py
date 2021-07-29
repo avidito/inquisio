@@ -1,9 +1,9 @@
 import csv
 from datetime import datetime
 
-from .engine import session_factory
-from .models import TABLE_MODELS
-from .utils import remove_duplicate, log_process
+from database.engine import session_factory
+from database.models import TABLE_MODELS
+from utils import remove_duplicate, log_db_process
 
 ##### MAIN #####
 def load_data_to_db(tmp, table_list, username, password, hostname, port, database):
@@ -17,7 +17,7 @@ def load_data_to_db(tmp, table_list, username, password, hostname, port, databas
         load_data(table_name, db_session=get_db, header=header, data=data)
 
 ##### CRUD #####
-@log_process
+@log_db_process
 def read_data(table_name, tmp):
     """Read data from csv file"""
 
@@ -27,7 +27,7 @@ def read_data(table_name, tmp):
         header, *data = reader
     return header, data
 
-@log_process
+@log_db_process
 def truncate_table(table_name, db_session):
     """Truncate database table"""
 
@@ -35,7 +35,7 @@ def truncate_table(table_name, db_session):
     with db_session() as db:
         db.query(table).delete()
 
-@log_process
+@log_db_process
 def load_data(table_name, db_session, header, data):
     """Load data to table"""
 

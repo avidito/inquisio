@@ -1,6 +1,7 @@
 from utils import logging, get_params, get_data, check_dir_path
 from process import process_data
 from load import load_data_to_db
+# from transformer import build_dw
 
 if __name__ == "__main__":
     # Get parameters
@@ -19,8 +20,11 @@ if __name__ == "__main__":
     yesterday_data = get_data(dmp_path, offset=-1)
 
     if (today_data or yesterday_data):
-        logging(f"Processing `{'today' if (today_data) else 'yesterday'}` data")
+        logging(f"Processing SRC data")
         process_data([*today_data, *yesterday_data], tmp_path)
 
-        logging(f"Startloading  `{'today' if (today_data) else 'yesterday'}` data")
+        logging(f"Start loading SRC data")
         load_data_to_db(tmp_path, table_list, username, password, hostname, port, database)
+
+        logging(f"Start building DW data")
+        # build_dw()

@@ -4,12 +4,36 @@ import json
 
 from settings import *
 
+##### Log #####
 def logging(message):
     """Print message with time namespace"""
 
     nmspc = datetime.now().strftime("[%Y-%m-%d %H:%M:%d]")
     print(f"{nmspc} {message}")
 
+def log_process(func):
+    """Logging wrapper to add time data"""
+
+    def wrapper(*data):
+        time_namespace = datetime.now().strftime("[%Y-%m-%d %H:%M:%S]")
+        message = f"Running `{func.__name__}` process"
+        print(f"{time_namespace} {message}")
+        result = func(*data)
+        return result
+    return wrapper
+
+def log_db_process(func):
+    """Logging wrapper to add time data"""
+
+    def wrapper(table_name, **params):
+        time_namespace = datetime.now().strftime("[%Y-%m-%d %H:%M:%S]")
+        message = f"Executing `{func.__name__}` process for `{table_name}`"
+        print(f"{time_namespace} {message}")
+        result = func(table_name, **params)
+        return result
+    return wrapper
+
+##### Params #####
 def get_params():
     """Get parameters value from configuration file"""
 
@@ -18,6 +42,15 @@ def get_params():
     params = {param: globals().get(param) for param in param_names}
     return params
 
+def check_dir_path(path):
+    """Check dump folder existence and create if the folder is not exist"""
+
+    if (os.path.exists(path)):
+        return True
+
+    os.mkdir(path)
+
+##### Data #####
 def get_data(path, offset=0):
     """Get data with offset days from tmp folder"""
 
@@ -31,10 +64,17 @@ def get_data(path, offset=0):
 
     return data
 
-def check_dir_path(path):
-    """Check dump folder existence and create if the folder is not exist"""
+def remove_duplicate(data, header, pk):
+    """Removing duplicate data based on its table primary key"""
 
-    if (os.path.exists(path)):
-        return True
-
-    os.mkdir(path)
+    check = set()
+    pk_id = [header.index(key) for key in pk]
+    cln_data = []
+    for row in data:
+        row_pk_value = tuple(row[i] for i in pk_id)
+        if (row_pk_value in check):
+            continue
+        else:
+            cln_data.append(row)
+            check.add(row_pk_value)
+    return cln_data
