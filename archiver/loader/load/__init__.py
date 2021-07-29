@@ -3,42 +3,45 @@ from datetime import datetime
 
 from .engine import session_factory
 from .models import TABLE_MODELS
+from .utils import remove_duplicate, log_process
 
 ##### MAIN #####
-def load_data_to_db(params):
-    tmp = params["TMP_PATH"]
-    table_list = params["TABLE_LIST"]
-    username = params["USERNAME"]
-    password = params["PASSWORD"]
-    hostname = params["HOSTNAME"]
-    port = params["PORT"]
-    database = params["DATABASE"]
+def load_data_to_db(tmp, table_list, username, password, hostname, port, database):
+    """Loading processed data to table"""
 
     get_db = session_factory(username, password, hostname, port, database)
-    for table_name in table_list:
-        header, data = read_data(table_name, tmp)
-        truncate_table(get_db, table_name)
-        load_data(get_db, table_name, header, data)
+    for table_name, pk in table_list.items():
+        header, data = read_data(table_name, tmp=tmp)
+        data = remove_duplicate(data, header, pk)
+        truncate_table(table_name, db_session=get_db)
+        load_data(table_name, db_session=get_db, header=header, data=data)
 
 ##### CRUD #####
+@log_process
 def read_data(table_name, tmp):
+    """Read data from csv file"""
+
     path = f"{tmp}/prc_{table_name}.csv"
     with open(path, "r") as file:
         reader = csv.reader(file, delimiter=",")
         header, *data = reader
     return header, data
 
-def truncate_table(get_db, table_name):
-    print(f"Truncating table {table_name}")
+@log_process
+def truncate_table(table_name, db_session):
+    """Truncate database table"""
 
     table = TABLE_MODELS[table_name]
-    with get_db() as db:
+    with db_session() as db:
         db.query(table).delete()
 
-def load_data(get_db, table_name, header, data):
-    print(f"Loading data to table {table_name}")
+@log_process
+def load_data(table_name, db_session, header, data):
+    """Load data to table"""
+
     row_data = [{col: value for col, value in zip(header, row)} for row in data]
 
+    # Add time data
     if (table_name in ("news", "categories", "contents", "tags")):
         time_col = {"load_dt": datetime.now()} if (table_name in ("news", "contents")) else {"update_dt": datetime.now()}
         fmt_row_data = [{**row, **time_col} for row in row_data]
@@ -46,6 +49,5 @@ def load_data(get_db, table_name, header, data):
         fmt_row_data = row_data
 
     records = [TABLE_MODELS[table_name](**row) for row in fmt_row_data]
-
-    with get_db() as db:
+    with db_session() as db:
         db.add_all(records)
