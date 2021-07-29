@@ -24,7 +24,8 @@ def navigate_page(url, delay, log, query=None, path=None, data=None, method="GET
 def extract_all_news(producer, log, page, excluded_url, delay, mode):
     """Extract all news provided in current page"""
 
-    news_list = page.find("div", attrs={"class": "news-content"}).find_all("li")
+    news_list_block = page.find("div", attrs={"class": "news-content"})
+    news_list = news_list_block.find_all("li") if (news_list_block) else []
     cnt = 0
     for news in news_list:
         try:
