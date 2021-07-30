@@ -1,0 +1,5 @@
+USERNAME = "inq_admin"
+PASSWORD = "admin"
+HOSTNAME = "localhost"
+PORT = "5432"
+DATABASE = "inquisio"
