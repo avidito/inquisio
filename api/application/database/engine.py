@@ -11,7 +11,7 @@ def session_factory():
     port = params["PORT"]
     database = params["DATABASE"]
 
-    db_engine = create_engine(f"postgresql://{username}:{password}@{hostname}:{port}/{database}")
+    db_engine = create_engine(f"postgresql+psycopg2://{username}:{password}@{hostname}:{port}/{database}")
     Session = sessionmaker(autocommit=False, autoflush=False, bind=db_engine)
 
     def get_db():
