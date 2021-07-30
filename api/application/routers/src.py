@@ -27,12 +27,10 @@ def get_news(
         "website": website,
         "channel": channel
     }
-    header, data = query.get_news(db, query_params)
-
-    rowcount = 1
+    data = query.get_news(db, query_params)
+    rowcount = len(data)
     return {
         "query_params": query_params,
-        "headers": header,
         "rowcount": rowcount,
         "data": data
     }
