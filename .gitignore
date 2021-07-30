@@ -3,7 +3,7 @@ __pycache__/
 *-env/
 __tmp/
 __dmp/
-streamer/settings.py
+settings.py
 
 result.json
 test.py
