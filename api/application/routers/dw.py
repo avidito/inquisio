@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from datetime import datetime
 
-from application.database import engine, models
+from application.database import engine, query
 
 ##### Router #####
 router = APIRouter(
@@ -20,26 +20,21 @@ def get_news_cnt(
     website: str = "all",
     db: Session = Depends(get_db)
 ):
-    query = {
+    query_params = {
         "day": day,
         "category": category,
         "src_category": src_category,
         "website": website
     }
-    header = ["website", "category", "src_category", "day", "cnt"]
-    rowcount = 1
-    data = [
-        ("test", "test", "test", "test", 100)
-    ]
+    rowcount, data = query.get_news_cnt(db, query_params)
     return {
-        "query": query,
-        "header": header,
+        "query_params": query_params,
         "rowcount": rowcount,
         "data": data
     }
 
 @router.get("/tags", summary="Get tags count from each website")
-def get_news(
+def get_tags_cnt(
     day: str = datetime.now().strftime("%Y-%m-%d"),
     website: str = "all",
     db: Session = Depends(get_db)

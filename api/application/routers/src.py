@@ -27,8 +27,8 @@ def get_news(
         "website": website,
         "channel": channel
     }
-    data = query.get_news(db, query_params)
-    rowcount = len(data)
+    rowcount, data = query.get_news(db, query_params)
+
     return {
         "query_params": query_params,
         "rowcount": rowcount,

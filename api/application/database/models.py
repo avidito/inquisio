@@ -3,6 +3,7 @@ from sqlalchemy import Column, String, Integer, DateTime, Text
 
 Base = declarative_base()
 
+##### SRC #####
 class News(Base):
 	__tablename__ = "news"
 	__table_args__ = {"schema": "src"}
@@ -54,3 +55,25 @@ class MapNewsTags(Base):
 
 	news_id = Column(Integer, primary_key=True)
 	tag_id = Column(Integer, primary_key=True)
+
+##### DW #####
+class NewsCnt(Base):
+	__tablename__ = "news_cnt"
+	__table_args__ = {"schema": "dw"}
+
+	website = Column(String, primary_key=True)
+	category = Column(String, primary_key=True)
+	src_category = Column(String, primary_key=True)
+	day = Column(DateTime, primary_key=True)
+	cnt = Column(Integer)
+	load_dt = Column(DateTime, primary_key=True)
+
+class TagsCnt(Base):
+	__tablename__ = "tags_cnt"
+	__table_args__ = {"schema": "dw"}
+
+	website = Column(String, primary_key=True)
+	tags = Column(String, primary_key=True)
+	day = Column(DateTime, primary_key=True)
+	cnt = Column(Integer)
+	load_dt = Column(DateTime, primary_key=True)
