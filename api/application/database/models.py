@@ -73,7 +73,7 @@ class TagsCnt(Base):
 	__table_args__ = {"schema": "dw"}
 
 	website = Column(String, primary_key=True)
-	tags = Column(String, primary_key=True)
+	tag = Column(String, primary_key=True)
 	day = Column(DateTime, primary_key=True)
 	cnt = Column(Integer)
 	load_dt = Column(DateTime, primary_key=True)

@@ -39,18 +39,14 @@ def get_tags_cnt(
     website: str = "all",
     db: Session = Depends(get_db)
 ):
-    query = {
+    query_params = {
         "day": day,
         "website": website
     }
     header = ["website", "tags", "day", "cnt"]
-    rowcount = 1
-    data = [
-        ("test", "test", "test", 100)
-    ]
+    rowcount, data = query.get_tags_cnt(db, query_params)
     return {
-        "query": query,
-        "header": header,
+        "query_params": query_params,
         "rowcount": rowcount,
         "data": data
     }

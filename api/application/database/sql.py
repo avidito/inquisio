@@ -2,7 +2,7 @@ from sqlalchemy import text, inspect, and_
 from datetime import datetime
 from sqlalchemy.dialects import postgresql
 
-from .models import News, Categories, NewsCnt
+from .models import News, Categories, NewsCnt, TagsCnt
 
 ##### SQL #####
 ## SRC SQL ##
@@ -54,6 +54,24 @@ def execute_get_news_cnt(db, day, category, src_category, website):
             NewsCnt.category.like(category),
             NewsCnt.src_category.like(src_category),
             NewsCnt.website.like(website)
+        )
+    )
+    return query.all()
+
+def execute_get_tags_cnt(db, day, website):
+    """Execute get_tags_cnt query logic"""
+
+    query = db.query(
+        TagsCnt.website,
+        TagsCnt.tag,
+        TagsCnt.day,
+        TagsCnt.cnt
+    ).select_from(
+        TagsCnt
+    ).filter(
+        and_(
+            TagsCnt.day == day,
+            TagsCnt.website.like(website)
         )
     )
     return query.all()
