@@ -32,28 +32,28 @@ In short:
 5. For transmit data, data will be consumed by `Transmitter`, processed and published to another Kafka topics.
 6. User can subscribe to transmitter topic for real-time data.
 
-### Stream Producer (Streamer)
+### Stream Producer
 `Streamer` is a cluster of web-scraping or web-crawling with data publisher services. `Streamer` will extract news information several website, category (or channel), and specific date. Currently, `Streamer` capable of extracting information from:
 - [Detik](https://www.detik.com/)
 - [Kompas](https://www.kompas.com/)
 - [Okezone](https://www.okezone.com/)
 - [Sindonews](https://www.sindonews.com/)
 
-[Find out more! >>>]()
+[Find out more! >>>](./producer/README.md)
 
-### Stream Archiver (Archiver)
+### Stream Archiver
 `Archiver` is a service to batching stream data and load it to database. `Archiver` consist of two components:
 - **Consumer**: subscribe topics and batch stream data into daily data.
 - **Loader**: loading daily data to database for source data (SRC) and update summary data (DW).
 
-[Find out more! >>>]()
+[Find out more! >>>](./archiver/README.md)
 
-### Stream Transmitter (Transmitter)
+### Stream Transmitter
 `Transmitter` is a service to processed stream data and publish it to another Pub/Sub topics. `Transmitter` will clean, transform, and add metadata to stream data. User can subscribe `Transmitter` topic to get real-time data.
 
-[Find out more! >>>]()
+[Find out more! >>>](./transmitter/README.md)
 
-### Data API (API)
+### Data API
 `API` is used to get source or summary data. `API` will retrieve data from archived data, so there is no time to wait for scraper to finish their scraping process.
 
-[Find out more! >>>]()
+[Find out more! >>>](./api/README.md)
