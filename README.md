@@ -39,21 +39,21 @@ In short:
 - [Okezone](https://www.okezone.com/)
 - [Sindonews](https://www.sindonews.com/)
 
-[Find out more! >>>](./producer/README.md)
+[Find out more! >>>](streamer/README.md)
 
 ### Stream Archiver
 `Archiver` is a service to batching stream data and load it to database. `Archiver` consist of two components:
 - **Consumer**: subscribe topics and batch stream data into daily data.
 - **Loader**: loading daily data to database for source data (SRC) and update summary data (DW).
 
-[Find out more! >>>](./archiver/README.md)
+[Find out more! >>>](archiver/README.md)
 
 ### Stream Transmitter
 `Transmitter` is a service to processed stream data and publish it to another Pub/Sub topics. `Transmitter` will clean, transform, and add metadata to stream data. User can subscribe `Transmitter` topic to get real-time data.
 
-[Find out more! >>>](./transmitter/README.md)
+[Find out more! >>>](transmitter/README.md)
 
 ### Data API
 `API` is used to get source or summary data. `API` will retrieve data from archived data, so there is no time to wait for scraper to finish their scraping process.
 
-[Find out more! >>>](./api/README.md)
+[Find out more! >>>](api/README.md)
