@@ -18,7 +18,9 @@ Check out these amazing libraries and services that I used to develop this proje
 - [Stream Transmitter (Transmitter)](#stream-transmitter)
 - [Data API (API)](#data-api)
 
-\* Each subproject can be setup by editing each `settings.py`
+**Notes**:
+- Each subproject can be setup by editing each `settings.py`
+- To run this project, please setup PostgreSQL and Kafka first.
 
 Below is the diagram of **Inquisio** services:
 

@@ -1,7 +1,7 @@
 # Stream Archiver (Archiver)
 
 ## Overview
-`Archiver` is a service to batching stream data and load it to database. It combining `SQLAlchemy` ORM and SQL script to create/update source and summary data. For database setup, check out [database]().
+`Archiver` is a service to batching stream data and load it to database. It combining `SQLAlchemy` ORM and SQL script to create/update source and summary data. For database setup, check out [database](database/README.md).
 
 ![Archiver](../docs/archiver.png)
 
