@@ -3,7 +3,6 @@ __pycache__/
 *-env/
 __tmp/
 __dmp/
-settings.py
 
 result.json
 test.py
